@@ -94,12 +94,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $mail->isSMTP();
                         $mail->Host       = 'smtp.gmail.com'; 
                         $mail->SMTPAuth   = true;
-                        $mail->Username   = 'adminkares@gmail.com'; 
-                        $mail->Password   = 'vborsopcwunmcfxv'; 
+                        
+                        // --- SECURE CREDENTIALS FOR RAILWAY ---
+                        $mail->Username   = getenv('SMTP_USER') ?: 'adminkares@gmail.com'; 
+                        $mail->Password   = getenv('SMTP_PASS') ?: 'your_local_app_password_here'; 
+                        // --------------------------------------
+                        
                         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                         $mail->Port       = 587;
 
-                        $mail->setFrom('adminkares@gmail.com', 'Barangay KARES Portal');
+                        // --- RAILWAY NETWORK FIX ---
+                        $mail->Timeout    = 15; // Set to 15s to fail BEFORE PHP's 30s limit
+                        $mail->SMTPOptions = array(
+                            'ssl' => array(
+                                'verify_peer' => false,
+                                'verify_peer_name' => false,
+                                'allow_self_signed' => true
+                            )
+                        );
+                        // ---------------------------
+
+                        $mail->setFrom($mail->Username, 'Barangay KARES Portal');
                         $mail->addAddress($user['email']);
                         
                         $mail->isHTML(true);
@@ -125,7 +140,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         exit();
 
                     } catch (Exception $e) {
-                        $error = "Failed to send OTP email. Mailer Error: {$mail->ErrorInfo}";
+                        $error = "Failed to send OTP email. Please check your internet or try again later.";
+                        error_log("OTP Email Error: " . $mail->ErrorInfo);
                     }
                     
                 } else {
