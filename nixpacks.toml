@@ -1,0 +1,5 @@
+[phases.setup]
+nixPkgs = ['php82', 'php82Packages.pdo_pgsql', 'php82Packages.pgsql']
+
+[phases.build]
+cmds = ['echo "Build phase complete"']
