@@ -110,7 +110,8 @@ try {
                     
                     // --- DEPLOYMENT FIX: SECURE CREDENTIALS ---
                     $mail->Username   = getenv('SMTP_USER') ?: 'adminkares@gmail.com'; 
-                    $mail->Password   = getenv('SMTP_PASS') ?: 'vborsopcwunmcfxv'; 
+                    // Make sure your REAL password is ONLY in Railway's variables!
+                    $mail->Password   = getenv('SMTP_PASS') ?: 'your_local_app_password_here'; 
                     // ------------------------------------------
                     
                     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
