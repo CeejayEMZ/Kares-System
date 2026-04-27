@@ -6,7 +6,7 @@
 
 $host = getenv('DB_HOST') ?: 'aws-0-ap-southeast-1.pooler.supabase.com'; 
 $db   = getenv('DB_NAME') ?: 'postgres';
-$user = getenv('DB_USER') ?: 'postgres.your_supabase_id';
+$user = getenv('DB_USER') ?: 'postgres.bqzamfwgqfxdqadrqorl';
 $pass = getenv('DB_PASS') ?: 'your_local_password';
 $port = getenv('DB_PORT') ?: '6543'; // Supabase usually uses 6543 or 5432
 
