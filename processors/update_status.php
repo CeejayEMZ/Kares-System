@@ -110,12 +110,22 @@ try {
                     
                     // --- DEPLOYMENT FIX: SECURE CREDENTIALS ---
                     $mail->Username   = getenv('SMTP_USER') ?: 'adminkares@gmail.com'; 
-                    // Make sure your REAL password is ONLY in Railway's variables!
                     $mail->Password   = getenv('SMTP_PASS') ?: 'your_local_app_password_here'; 
                     // ------------------------------------------
                     
                     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                     $mail->Port       = 587;
+
+                    // --- RAILWAY NETWORK FIX ---
+                    $mail->Timeout = 15; // Don't hang forever
+                    $mail->SMTPOptions = array(
+                        'ssl' => array(
+                            'verify_peer' => false,
+                            'verify_peer_name' => false,
+                            'allow_self_signed' => true
+                        )
+                    );
+                    // ---------------------------
 
                     $mail->setFrom($mail->Username, 'Barangay Kanluran KARES');
                     $mail->addAddress($citizen_email);
@@ -134,14 +144,17 @@ try {
                         </div>
                     ";
                     $mail->AltBody = "Hello {$first_name}, your request ({$request_id}) is now: {$new_status}.";
+                    
                     $mail->send();
                     
                 } catch (Exception $e) {
-                    die("<div style='font-family:sans-serif; padding: 30px; background: #ffcccc; color: red;'><h2>⚠️ Email Failed to Send!</h2><p>Error Details: {$mail->ErrorInfo}</p><br><a href='../admin/approval.php' style='color:red; text-decoration:underline;'>Go back to Dashboard</a></div>");
+                    // Fail silently or log error so the user isn't stuck on a white screen
+                    error_log("PHPMailer Error: " . $mail->ErrorInfo);
                 }
             }
         }
 
+        // Redirect based on the final status
         if ($new_status === 'Released') {
             header("Location: ../admin/released.php?msg=StatusUpdated");
         } else {
