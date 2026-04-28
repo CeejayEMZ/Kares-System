@@ -1328,7 +1328,7 @@ $request_history = $history_stmt->fetchAll();
     <button class="cares-mascot-btn" id="cares-btn"><img src="../assets/images/CARES1.gif" alt="Cares Mascot" class="cares-mascot-img" onerror="this.style.display='none'"></button>
     
     <div class="cares-chat-window" id="cares-window">
-      <div class="cares-chat-header"><h3 class="cares-chat-title">🦹 KARES assistant</h3><button class="cares-close-btn" id="cares-close">×</button></div>
+      <div class="cares-chat-header"><h3 class="cares-chat-title">🦹 KARES Assistant</h3><button class="cares-close-btn" id="cares-close">×</button></div>
       
       <div class="cares-chat-content" id="cares-content">
           <div class="cares-messages" id="chat-body"></div>
