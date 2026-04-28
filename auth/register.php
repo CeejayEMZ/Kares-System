@@ -18,7 +18,11 @@ $email_input = ''; // Initialize so we can echo it back if passwords don't match
 
 // Helper function to send the OTP email via API
 function sendVerificationEmail($email, $code, &$error) {
-    $api_key = getenv('BREVO_API_KEY');
+    $api_key = $_SERVER['BREVO_API_KEY'] ?? $_ENV['BREVO_API_KEY'] ?? getenv('BREVO_API_KEY') ?? '';
+
+    if (empty($api_key)) {
+    error_log("CRITICAL: API Key is completely empty. Railway is not passing the variable.");
+    }
     $htmlContent = "
         <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0d5e8; border-radius: 10px;'>
             <h2 style='color: #3d143e;'>Verify Your KARES Account</h2>

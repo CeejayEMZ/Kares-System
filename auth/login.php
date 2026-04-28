@@ -81,7 +81,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $update_stmt->execute([':otp' => $otp, ':id' => $user['id']]);
 
                     // --- SEND EMAIL VIA BREVO API ---
-                    $api_key = getenv('BREVO_API_KEY');
+                    $api_key = $_SERVER['BREVO_API_KEY'] ?? $_ENV['BREVO_API_KEY'] ?? getenv('BREVO_API_KEY') ?? '';
+
+                    if (empty($api_key)) {
+                    error_log("CRITICAL: API Key is completely empty. Railway is not passing the variable.");
+                    }
                     $htmlContent = "
                         <div style='font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;'>
                             <h2 style='color: #3d143e; text-align: center;'>Login Verification</h2>
