@@ -89,22 +89,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $update_stmt->execute([':otp' => $otp, ':id' => $user['id']]);
 
                     // Send the Email
+                    // ... inside your OTP generating block ...
+
                     $mail = new PHPMailer(true);
                     try {
                         $mail->isSMTP();
-                        $mail->Host       = 'smtp.gmail.com'; 
+                        
+                        // Force SSL right away to prevent handshake hangs
+                        $mail->Host       = 'ssl://smtp.gmail.com'; 
                         $mail->SMTPAuth   = true;
                         
-                        // --- SECURE CREDENTIALS FOR RAILWAY ---
                         $mail->Username   = getenv('SMTP_USER') ?: 'adminkares@gmail.com'; 
                         $mail->Password   = getenv('SMTP_PASS') ?: 'your_local_app_password_here'; 
-                        // --------------------------------------
                         
-                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                        $mail->Port       = 587;
+                        // Switch to SMTPS and Port 465
+                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; 
+                        $mail->Port       = 465; 
 
-                        // --- RAILWAY NETWORK FIX ---
-                        $mail->Timeout    = 15; // Set to 15s to fail BEFORE PHP's 30s limit
+                        // Keep the timeout and SSL overrides for Railway
+                        $mail->Timeout    = 20; 
                         $mail->SMTPOptions = array(
                             'ssl' => array(
                                 'verify_peer' => false,
@@ -112,10 +115,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 'allow_self_signed' => true
                             )
                         );
-                        // ---------------------------
 
                         $mail->setFrom($mail->Username, 'Barangay KARES Portal');
                         $mail->addAddress($user['email']);
+    
+// ... rest of the email body code ...
                         
                         $mail->isHTML(true);
                         $mail->Subject = 'Your KARES Login OTP';
