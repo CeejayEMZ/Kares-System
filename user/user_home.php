@@ -235,7 +235,7 @@ $request_history = $history_stmt->fetchAll();
     .cares-question-btn { background: #eee0c0; border: 2px solid transparent; padding: 14px 16px; border-radius: 20px; cursor: pointer; font-size: 15px; font-weight: 600; text-align: left; color: #3d143e; transition: transform 0.2s;}
     .cares-question-btn:hover { transform: scale(1.02); border-color: #c6943a; }
     
-    .chat-input-area { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid #eee; background: #fafafa; border-radius: 0 0 12px 12px;}
+    .chat-input-area { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid #eee; background: #fafafa; border-radius: 0 0 12px 12px; align-items: center;}
     .chat-input-area input { flex: 1; padding: 10px 15px; border-radius: 20px; border: 1px solid #ddd; outline: none; font-size: 14px; }
     .chat-input-area input:focus { border-color: #5b8fb0; }
 
@@ -370,7 +370,7 @@ $request_history = $history_stmt->fetchAll();
                  <i class="fas fa-bars"></i>
              </button>
 
-        </div>
+       </div>
 
       </div>
      </div>
@@ -426,7 +426,7 @@ $request_history = $history_stmt->fetchAll();
                  Logout
              </a>
          </div>
-     </div>
+    </div>
     </nav>
 
     <div id="business-hours-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[999] flex items-center justify-center p-4 animate-fade">
@@ -889,7 +889,7 @@ $request_history = $history_stmt->fetchAll();
                     </div>
                 </div>
 
-           </form>
+            </form>
        </div>
     </div>
 
@@ -1335,17 +1335,20 @@ $request_history = $history_stmt->fetchAll();
           <div id="faq-wrapper" style="display:none; margin-top: 10px;">
               <div class="flex justify-center mb-3">
                   <button onclick="caresMascot.toggleFaqs()" id="faq-toggle-btn" class="text-[11px] text-gray-500 font-bold hover:text-[#3d143e] transition bg-gray-100 border border-gray-200 px-3 py-1.5 rounded-full flex items-center gap-1 shadow-sm">
-                      <i class="fas fa-chevron-down"></i> Hide Suggestions
+                      <i class="fas fa-chevron-up"></i> Show Suggestions
                   </button>
               </div>
-              <div class="cares-questions" id="cares-questions"></div>
+              <div class="cares-questions" id="cares-questions" style="display: none;"></div>
           </div>
           
           <div id="cares-followup-actions"></div>
       </div>
       
       <div class="chat-input-area" id="chat-input-area" style="display:none;">
-          <input type="text" id="chat-input" placeholder="Type your message here..." onkeypress="caresMascot.handleInput(event)">
+          <input type="text" id="chat-input" placeholder="Type your message here..." onkeypress="caresMascot.handleKeyPress(event)">
+          <button id="chat-send-btn" onclick="caresMascot.sendMessage()" class="bg-gold text-white w-10 h-10 rounded-full flex items-center justify-center shadow-sm hover:bg-yellow-600 transition shrink-0">
+              <i class="fas fa-paper-plane"></i>
+          </button>
       </div>
     </div>
   </div>
@@ -2036,12 +2039,10 @@ $request_history = $history_stmt->fetchAll();
 
         handleFooterOverlap() {
             const updateMascotPosition = () => {
-                // 1. Find which footer is currently visible (desktop vs mobile)
                 const footers = document.querySelectorAll('footer');
                 let activeFooter = null;
                 
                 footers.forEach(f => {
-                    // Check if it's not hidden by Tailwind classes
                     if (window.getComputedStyle(f).display !== 'none' && f.offsetHeight > 0) {
                         activeFooter = f;
                     }
@@ -2053,21 +2054,16 @@ $request_history = $history_stmt->fetchAll();
                 const footerRect = activeFooter.getBoundingClientRect(); 
                 const windowHeight = window.innerHeight;
                 
-                // 2. If the footer enters the screen, push the mascot up by the exact overlap amount
                 if (footerRect.top < windowHeight) { 
                     const overlap = windowHeight - footerRect.top; 
                     mascot.style.bottom = (24 + overlap) + 'px'; 
                 } else { 
-                    // 3. Default position when footer is out of sight
                     mascot.style.bottom = '24px'; 
                 }
             };
 
-            // Listen for scrolling and resizing
             window.addEventListener('scroll', updateMascotPosition);
             window.addEventListener('resize', updateMascotPosition);
-            
-            // Run it once right away just in case the page is short
             setTimeout(updateMascotPosition, 100);
         },
 
@@ -2112,73 +2108,77 @@ $request_history = $history_stmt->fetchAll();
             }, 300);
         },
 
-        handleInput(event) {
+        handleKeyPress(event) {
             if (event.key === 'Enter') {
-                const inputEl = document.getElementById('chat-input');
-                if(!inputEl) return;
-                const userText = inputEl.value.trim();
-                if (!userText) return;
-
-                this.appendMessage(userText, 'user');
-                inputEl.value = '';
-
-                const textLower = userText.toLowerCase();
-                let botResponse = "I'm not quite sure about that. Try clicking one of the FAQ buttons, or give me your Reference ID to track a request!";
-
-                if (textLower === "hi" || textLower === "hello" || textLower === "hey") {
-                    botResponse = "Hello there! How can I assist you with your barangay needs today?";
-                } 
-                else if (textLower.includes("how are you")) {
-                    botResponse = "I'm doing great, just here ready to help you out! What do you need assistance with?";
-                }
-                else if (textLower.includes("good morning") || textLower.includes("good afternoon") || textLower.includes("good evening")) {
-                    botResponse = "Good day to you too! Are you looking to request assistance or track an existing one?";
-                }
-                else if (textLower.includes("follow up") || textLower.includes("follow-up") || textLower.includes("nudge") || textLower.includes("update")) {
-                    botResponse = "I can help you send a follow-up nudge to the admins! Just give me your Reference ID so I can track it first.";
-                    setTimeout(() => this.showReferenceInput(), 2000);
-                }
-                else if (textLower.includes("time") || textLower.includes("hours") || textLower.includes("open") || textLower.includes("close")) {
-                    botResponse = "The Barangay Hall is open Monday to Friday, from 8:00 AM to 5:00 PM.";
-                }
-                else if (textLower.includes("medical") || textLower.includes("hospital")) {
-                    botResponse = "For Medical or Hospital assistance, you will need a Medical Certificate and a valid ID. Click 'Social Welfare Assistance' on your home screen to start!";
-                } 
-                else if (textLower.includes("burial") || textLower.includes("funeral") || textLower.includes("dead")) {
-                    botResponse = "I am sorry for your loss. For Burial Assistance, prepare a Death Certificate and Funeral Contract. You can submit these in the Request menu.";
-                } 
-                else if (textLower.includes("financial") || textLower.includes("money") || textLower.includes("cash")) {
-                    botResponse = "If you need Financial Assistance, please prepare an Indigency Certificate and a valid ID. You can apply through the 'Social Welfare Assistance' menu.";
-                }
-                else if (textLower.includes("require") || textLower.includes("documents") || textLower.includes("need")) {
-                    botResponse = "The requirements depend on the assistance. You generally need a Valid ID and a Certificate of Indigency. Specific types (like Medical or Burial) require additional proofs like a Medical Certificate or Death Certificate.";
-                }
-                else if (textLower.includes("verify") || textLower.includes("kyc") || textLower.includes("id")) {
-                    botResponse = "Verifying your account makes requesting assistance much faster! Just go to your Profile and click 'Get Verified' to upload your ID.";
-                } 
-                else if (textLower.includes("where") || textLower.includes("location") || textLower.includes("address")) {
-                    botResponse = "We are located at St. Sto. Rosario Kanluran, Municipality of Pateros, Metro Manila.";
-                }
-                else if (textLower.includes("thank")) {
-                    botResponse = "You're very welcome! Let me know if you need anything else.";
-                } 
-                else if (textLower.includes("who are you") || textLower.includes("what are you")) {
-                    botResponse = "I am Cares, the official AI assistant for Barangay Santo Rosario-Kanluran. I can guide you through requests and track your documents!";
-                }
-                else if (textLower.match(/^\d{4}-/)) {
-                    botResponse = "It looks like you entered a Reference ID! Let me check the database for that... (Tracking feature loading)";
-                    this.botReply(botResponse);
-                    
-                    setTimeout(() => {
-                        const trackInput = document.getElementById('cares-track-input');
-                        if(trackInput) trackInput.value = userText;
-                        this.handleTrackSubmit();
-                    }, 2000);
-                    return;
-                }
-                
-                this.botReply(botResponse);
+                this.sendMessage();
             }
+        },
+
+        async sendMessage() {
+            const inputEl = document.getElementById('chat-input');
+            if(!inputEl) return;
+            const userText = inputEl.value.trim();
+            if (!userText) return;
+
+            this.appendMessage(userText, 'user');
+            inputEl.value = '';
+
+            const textLower = userText.toLowerCase();
+            let botResponse = "I'm not quite sure about that. Try clicking one of the FAQ buttons, or give me your Reference ID to track a request!";
+
+            if (textLower === "hi" || textLower === "hello" || textLower === "hey") {
+                botResponse = "Hello there! How can I assist you with your barangay needs today?";
+            } 
+            else if (textLower.includes("how are you")) {
+                botResponse = "I'm doing great, just here ready to help you out! What do you need assistance with?";
+            }
+            else if (textLower.includes("good morning") || textLower.includes("good afternoon") || textLower.includes("good evening")) {
+                botResponse = "Good day to you too! Are you looking to request assistance or track an existing one?";
+            }
+            else if (textLower.includes("follow up") || textLower.includes("follow-up") || textLower.includes("nudge") || textLower.includes("update")) {
+                botResponse = "I can help you send a follow-up nudge to the admins! Just give me your Reference ID so I can track it first.";
+                setTimeout(() => this.showReferenceInput(), 2000);
+            }
+            else if (textLower.includes("time") || textLower.includes("hours") || textLower.includes("open") || textLower.includes("close")) {
+                botResponse = "The Barangay Hall is open Monday to Friday, from 8:00 AM to 5:00 PM.";
+            }
+            else if (textLower.includes("medical") || textLower.includes("hospital")) {
+                botResponse = "For Medical or Hospital assistance, you will need a Medical Certificate and a valid ID. Click 'Social Welfare Assistance' on your home screen to start!";
+            } 
+            else if (textLower.includes("burial") || textLower.includes("funeral") || textLower.includes("dead")) {
+                botResponse = "I am sorry for your loss. For Burial Assistance, prepare a Death Certificate and Funeral Contract. You can submit these in the Request menu.";
+            } 
+            else if (textLower.includes("financial") || textLower.includes("money") || textLower.includes("cash")) {
+                botResponse = "If you need Financial Assistance, please prepare an Indigency Certificate and a valid ID. You can apply through the 'Social Welfare Assistance' menu.";
+            }
+            else if (textLower.includes("require") || textLower.includes("documents") || textLower.includes("need")) {
+                botResponse = "The requirements depend on the assistance. You generally need a Valid ID and a Certificate of Indigency. Specific types (like Medical or Burial) require additional proofs like a Medical Certificate or Death Certificate.";
+            }
+            else if (textLower.includes("verify") || textLower.includes("kyc") || textLower.includes("id")) {
+                botResponse = "Verifying your account makes requesting assistance much faster! Just go to your Profile and click 'Get Verified' to upload your ID.";
+            } 
+            else if (textLower.includes("where") || textLower.includes("location") || textLower.includes("address")) {
+                botResponse = "We are located at St. Sto. Rosario Kanluran, Municipality of Pateros, Metro Manila.";
+            }
+            else if (textLower.includes("thank")) {
+                botResponse = "You're very welcome! Let me know if you need anything else.";
+            } 
+            else if (textLower.includes("who are you") || textLower.includes("what are you")) {
+                botResponse = "I am Cares, the official AI assistant for Barangay Santo Rosario-Kanluran. I can guide you through requests and track your documents!";
+            }
+            else if (textLower.match(/^\d{4}-/)) {
+                botResponse = "It looks like you entered a Reference ID! Let me check the database for that...";
+                this.botReply(botResponse);
+                
+                setTimeout(() => {
+                    const trackInput = document.getElementById('cares-track-input');
+                    if(trackInput) trackInput.value = userText;
+                    this.handleTrackSubmit();
+                }, 2000);
+                return;
+            }
+            
+            this.botReply(botResponse);
         },
 
         showReferenceInput() {
@@ -2221,7 +2221,7 @@ $request_history = $history_stmt->fetchAll();
             let botText = '';
             if(result.success) {
                 botText = `Found it! Your request for <strong>${result.data.assistance_type}</strong> is currently: <strong style="color:#A462A9;">${result.data.status}</strong>.`;
-                this.currentTrackedId = ref; // Remember the ID
+                this.currentTrackedId = ref; 
             } else {
                 botText = `I couldn't find anything for ID: ${ref}. Please check the number and try again.`;
                 this.currentTrackedId = null;
@@ -2230,11 +2230,10 @@ $request_history = $history_stmt->fetchAll();
             if(followupEl) followupEl.innerHTML = '';
             this.botReply(botText);
 
-            // NEW: If the request is still pending/approved, offer the follow-up button!
             if(result.success && (result.data.status === 'Submitted' || result.data.status === 'Approved')) {
                 setTimeout(() => {
                     this.showFollowUpOption();
-                }, 2000); // Wait for the bot to finish "typing" the previous message
+                }, 2000);
             }
         },
 
@@ -2292,7 +2291,7 @@ $request_history = $history_stmt->fetchAll();
             }
 
             if(followupEl) followupEl.innerHTML = '';
-            this.currentTrackedId = null; // Clear it to prevent double-sends
+            this.currentTrackedId = null;
         },
 
         appendMessage(text, sender) {
@@ -2329,8 +2328,8 @@ $request_history = $history_stmt->fetchAll();
                         const toggleBtn = document.getElementById('faq-toggle-btn');
                         
                         if(faqWrapper) faqWrapper.style.display = 'block'; 
-                        if(caresQuestions) caresQuestions.style.display = 'flex';
-                        if(toggleBtn) toggleBtn.innerHTML = '<i class="fas fa-chevron-down"></i> Hide Suggestions';
+                        if(caresQuestions) caresQuestions.style.display = 'none'; // Suggestions hidden by default
+                        if(toggleBtn) toggleBtn.innerHTML = '<i class="fas fa-chevron-up"></i> Show Suggestions';
                         
                         if(chatContent) chatContent.scrollTop = chatContent.scrollHeight;
                     }, 500);
