@@ -230,6 +230,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="form-options">
           <label class="remember-me"><input type="checkbox" name="remember" value="yes" /> Remember me</label>
           <a href="register.php" class="signup-link">Don't have an account yet? Sign up.</a>
+          <a href="forgot_password.php" style="color: #cca8d6; text-decoration: none; font-size: 13px; float: right; margin-top: 5px;">Forgot Password?</a>
         </div>
         <div class="btn-container"><button type="submit" class="sign-in-btn">SIGN IN</button></div>
       </form>
