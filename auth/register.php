@@ -3,13 +3,6 @@
 session_start();
 require_once '../config/db_connect.php'; 
 
-require_once '../vendor/Exception.php';
-require_once '../vendor/PHPMailer.php';
-require_once '../vendor/SMTP.php';
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
 if (isset($_SESSION['user_id'])) {
     if ($_SESSION['role'] === 'Admin') {
         header("Location: ../admin/dashboard.php");
@@ -23,44 +16,51 @@ $error = '';
 $step = 1; // 1 for Form, 2 for Verification
 $email_input = ''; // Initialize so we can echo it back if passwords don't match
 
-// Helper function to send the OTP email
+// Helper function to send the OTP email via API
 function sendVerificationEmail($email, $code, &$error) {
-    $mail = new PHPMailer(true);
-    try {
-        $mail->isSMTP();
-        $mail->Host       = 'smtp.gmail.com';
-        $mail->SMTPAuth   = true;
-        $mail->Username   = 'adminkares@gmail.com'; 
-        $mail->Password   = 'vborsopcwunmcfxv'; // App Password
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = 587;
-
-        $mail->setFrom('adminkares@gmail.com', 'KARES Support');
-        $mail->addAddress($email);
-
-        $mail->isHTML(true);
-        $mail->Subject = 'Your KARES Verification Code';
-        $mail->Body    = "
-            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0d5e8; border-radius: 10px;'>
-                <h2 style='color: #3d143e;'>Verify Your KARES Account</h2>
-                <p style='color: #555;'>Thank you for registering with the Kalinga Assistance Request and Evaluation System.</p>
-                <p style='color: #555;'>Your 5-digit verification code is:</p>
-                <div style='background-color: #f4f4f4; padding: 15px; text-align: center; border-radius: 8px; margin: 20px 0;'>
-                    <span style='font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #c6943a;'>{$code}</span>
-                </div>
-                <p style='color: #999; font-size: 12px;'>This code will expire in 4 minutes. If you did not request this, please ignore this email.</p>
+    $api_key = getenv('BREVO_API_KEY');
+    $htmlContent = "
+        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0d5e8; border-radius: 10px;'>
+            <h2 style='color: #3d143e;'>Verify Your KARES Account</h2>
+            <p style='color: #555;'>Thank you for registering with the Kalinga Assistance Request and Evaluation System.</p>
+            <p style='color: #555;'>Your 5-digit verification code is:</p>
+            <div style='background-color: #f4f4f4; padding: 15px; text-align: center; border-radius: 8px; margin: 20px 0;'>
+                <span style='font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #c6943a;'>{$code}</span>
             </div>
-        ";
-        $mail->AltBody = "Your KARES verification code is: {$code}";
+            <p style='color: #999; font-size: 12px;'>This code will expire in 4 minutes. If you did not request this, please ignore this email.</p>
+        </div>
+    ";
 
-        $mail->send();
+    $data = [
+        'sender' => ['name' => 'KARES Support', 'email' => 'adminkares@gmail.com'],
+        'to' => [['email' => $email]],
+        'subject' => 'Your KARES Verification Code',
+        'htmlContent' => $htmlContent
+    ];
+
+    $ch = curl_init('https://api.brevo.com/v3/smtp/email');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'accept: application/json',
+        'api-key: ' . $api_key,
+        'content-type: application/json'
+    ]);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+
+    $response = curl_exec($ch);
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpcode == 201 || $httpcode == 200 || $httpcode == 202) {
         return true;
-    } catch (Exception $e) {
-        $error = "Failed to send verification email. Error: {$mail->ErrorInfo}";
+    } else {
+        $error = "Failed to send verification email. API Error Code: " . $httpcode;
+        error_log("Brevo API Error: " . $response);
         return false;
     }
 }
-
 
 // Handle Form Submissions
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -218,8 +218,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .input-group { position: relative; margin-bottom: 15px; }
     .input-field { width: 100%; padding: 14px 20px; border: none; border-radius: 30px; font-size: 14px; background-color: #f4f4f4; color: #333; outline: none; }
     
-    .info-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #a462a9; cursor: pointer; font-size: 16px; transition: 0.3s; }
+    .info-btn { position: absolute; right: 45px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #a462a9; cursor: pointer; font-size: 16px; transition: 0.3s; }
     .info-btn:hover { color: #3d143e; }
+    .toggle-pwd-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #a462a9; cursor: pointer; font-size: 16px; transition: 0.3s; }
+    .toggle-pwd-btn:hover { color: #3d143e; }
     
     .code-box-container { background: #f4f4f4; border-radius: 15px; padding: 10px 20px; margin-bottom: 20px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);}
     .code-input { width: 100%; border: none; background: transparent; font-size: 14px; color: #333; outline: none; padding: 5px 0; text-align: center; letter-spacing: 2px;}
@@ -236,7 +238,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .login-link a { color: #f3e4ff; text-decoration: none; font-weight: 700; cursor: pointer; }
     .login-link a:hover { color: white; }
     
-    /* FIXED: Created a distinct success class */
     .error-message { color: #ffb3b3; background: rgba(255, 0, 0, 0.1); padding: 10px; border-radius: 10px; font-size: 13px; margin-bottom: 15px; border: 1px solid rgba(255, 0, 0, 0.2); text-align: center;}
     .success-message { color: #b3ffb3; background: rgba(0, 255, 0, 0.1); padding: 10px; border-radius: 10px; font-size: 13px; margin-bottom: 15px; border: 1px solid rgba(0, 255, 0, 0.2); text-align: center;}
 
@@ -302,14 +303,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             
             <div class="input-group">
-              <input type="password" name="password" class="input-field" placeholder="Password" style="padding-right: 40px;" required />
+              <input type="password" name="password" id="reg-password" class="input-field" placeholder="Password" style="padding-right: 70px;" required />
               <button type="button" class="info-btn" onclick="document.getElementById('pwd-modal').style.display='flex'" title="View Password Criteria">
                   <i class="fas fa-info-circle"></i>
+              </button>
+              <button type="button" class="toggle-pwd-btn" onclick="togglePassword('reg-password', this)">
+                  <i class="fas fa-eye"></i>
               </button>
             </div>
             
             <div class="input-group">
-              <input type="password" name="confirm_password" class="input-field" placeholder="Confirm Password" required />
+              <input type="password" name="confirm_password" id="reg-confirm" class="input-field" placeholder="Confirm Password" style="padding-right: 40px;" required />
+              <button type="button" class="toggle-pwd-btn" onclick="togglePassword('reg-confirm', this)">
+                  <i class="fas fa-eye"></i>
+              </button>
             </div>
 
             <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #cca8d6; margin-bottom: 20px; cursor: pointer;">
@@ -381,5 +388,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </div>
   </div>
 
+  <script>
+    function togglePassword(inputId, btn) {
+        var input = document.getElementById(inputId);
+        var icon = btn.querySelector('i');
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            input.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
+    }
+  </script>
 </body>
 </html>

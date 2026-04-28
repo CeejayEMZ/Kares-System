@@ -3,14 +3,6 @@
 session_start();
 require_once '../config/db_connect.php'; 
 
-// Load PHPMailer classes
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-require_once '../vendor/Exception.php';
-require_once '../vendor/PHPMailer.php';
-require_once '../vendor/SMTP.php'; 
-
 // --- AUTO-LOGIN VIA REMEMBER ME COOKIE ---
 if (!isset($_SESSION['user_id']) && isset($_COOKIE['kares_remember_me'])) {
     $token = $_COOKIE['kares_remember_me'];
@@ -88,44 +80,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $update_stmt = $pdo->prepare("UPDATE users SET otp_code = :otp WHERE id = :id");
                     $update_stmt->execute([':otp' => $otp, ':id' => $user['id']]);
 
-                    // Send the Email
-                    // ... inside your OTP block ...
-
-                    $mail = new PHPMailer(true);
-                    try {
-                        $mail->isSMTP();
-                        
-                        // THE ULTIMATE NETWORK FIX: Force PHP to find Google's exact IPv4 address
-                        $google_ipv4 = gethostbyname('smtp.gmail.com');
-                        $mail->Host = $google_ipv4; 
-                        
-                        $mail->SMTPAuth   = true;
-                        $mail->Username   = getenv('SMTP_USER') ?: 'adminkares@gmail.com'; 
-                        $mail->Password   = getenv('SMTP_PASS') ?: 'your_local_app_password_here'; 
-                        
-                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; 
-                        $mail->Port       = 587; 
-
-                        $mail->Timeout    = 20; 
-                        
-                        // Because we are using an IP address instead of the name "smtp.gmail.com",
-                        // we MUST tell PHP not to panic that the SSL certificate name doesn't match the IP.
-                        $mail->SMTPOptions = array(
-                            'ssl' => array(
-                                'verify_peer' => false,
-                                'verify_peer_name' => false,
-                                'allow_self_signed' => true
-                            )
-                        );
-
-                        $mail->setFrom($mail->Username, 'Barangay KARES Portal');
-                        $mail->addAddress($user['email']);
-                        
-                    // ... rest of your email body setup ...
-                        
-                        $mail->isHTML(true);
-                        $mail->Subject = 'Your KARES Login OTP';
-                        $mail->Body    = "
+                    // --- SEND EMAIL VIA BREVO API ---
+                    $api_key = getenv('BREVO_API_KEY');
+                    $htmlContent = "
                         <div style='font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;'>
                             <h2 style='color: #3d143e; text-align: center;'>Login Verification</h2>
                             <p style='color: #333; font-size: 16px;'>Hello,</p>
@@ -136,18 +93,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <p style='color: #777; font-size: 12px; text-align: center;'>If you did not request this login, please ignore this email.</p>
                         </div>";
 
-                        $mail->send();
+                    $data = [
+                        'sender' => ['name' => 'Barangay KARES Portal', 'email' => 'adminkares@gmail.com'],
+                        'to' => [['email' => $user['email']]],
+                        'subject' => 'Your KARES Login OTP',
+                        'htmlContent' => $htmlContent
+                    ];
 
+                    $ch = curl_init('https://api.brevo.com/v3/smtp/email');
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_POST, true);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                        'accept: application/json',
+                        'api-key: ' . $api_key,
+                        'content-type: application/json'
+                    ]);
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+
+                    $response = curl_exec($ch);
+                    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                    curl_close($ch);
+
+                    if ($httpcode == 201 || $httpcode == 200 || $httpcode == 202) {
                         // Set temporary session vars so we know who is trying to login
                         $_SESSION['pending_login_id'] = $user['id'];
                         $_SESSION['pending_remember'] = $remember_me;
                         
                         header("Location: verify_login.php");
                         exit();
-
-                    } catch (Exception $e) {
-                        $error = "Failed to send OTP email. Please check your internet or try again later.";
-                        error_log("OTP Email Error: " . $mail->ErrorInfo);
+                    } else {
+                        $error = "Failed to send OTP email via API. Please try again later.";
+                        error_log("Brevo API Error: " . $response);
                     }
                     
                 } else {
@@ -169,6 +146,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="../assets/images/kareslogo.png" />
   <title>KARES Login</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background-image: url('../assets/images/bg.png'); background-size: cover; background-position: center; background-color: rgba(0, 0, 0, 0.65); background-blend-mode: overlay; padding: 20px;}
@@ -196,6 +174,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .sign-in-btn { background-color: #d6af3c; color: #111; border: none; padding: 12px 35px; border-radius: 30px; font-weight: 700; font-size: 14px; cursor: pointer; transition: background-color 0.3s; width: 100%; max-width: 200px;}
     .sign-in-btn:hover { background-color: #bfa035; }
     .error-message { color: #ffb3b3; background: rgba(255, 0, 0, 0.1); padding: 10px; border-radius: 10px; font-size: 13px; margin-bottom: 15px; border: 1px solid rgba(255, 0, 0, 0.2); text-align: center; }
+    
+    .toggle-pwd-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #a462a9; cursor: pointer; font-size: 16px; transition: 0.3s; }
+    .toggle-pwd-btn:hover { color: #3d143e; }
 
     /* Desktop View Adjustments */
     @media (min-width: 768px) {
@@ -238,7 +219,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <input type="text" name="username" class="input-field" placeholder="Email Address" value="<?= htmlspecialchars($username_input) ?>" required />
         </div>
         <div class="input-group">
-          <input type="password" name="password" class="input-field" placeholder="Password" required />
+          <input type="password" name="password" id="login_pass" class="input-field" placeholder="Password" style="padding-right: 40px;" required />
+          <button type="button" class="toggle-pwd-btn" onclick="togglePassword('login_pass', this)">
+              <i class="fas fa-eye"></i>
+          </button>
         </div>
         <div class="form-options">
           <label class="remember-me"><input type="checkbox" name="remember" value="yes" /> Remember me</label>
@@ -248,5 +232,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </form>
     </div>
   </div>
+
+  <script>
+    function togglePassword(inputId, btn) {
+        var input = document.getElementById(inputId);
+        var icon = btn.querySelector('i');
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            input.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
+    }
+  </script>
 </body>
 </html>
