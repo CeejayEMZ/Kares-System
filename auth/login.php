@@ -89,25 +89,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $update_stmt->execute([':otp' => $otp, ':id' => $user['id']]);
 
                     // Send the Email
-                    // ... inside your OTP generating block ...
+                    // ... inside your OTP block ...
 
                     $mail = new PHPMailer(true);
                     try {
                         $mail->isSMTP();
                         
-                        // Force SSL right away to prevent handshake hangs
-                        $mail->Host       = 'ssl://smtp.gmail.com'; 
-                        $mail->SMTPAuth   = true;
+                        // THE ULTIMATE NETWORK FIX: Force PHP to find Google's exact IPv4 address
+                        $google_ipv4 = gethostbyname('smtp.gmail.com');
+                        $mail->Host = $google_ipv4; 
                         
+                        $mail->SMTPAuth   = true;
                         $mail->Username   = getenv('SMTP_USER') ?: 'adminkares@gmail.com'; 
                         $mail->Password   = getenv('SMTP_PASS') ?: 'your_local_app_password_here'; 
                         
-                        // Switch to SMTPS and Port 465
-                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; 
-                        $mail->Port       = 465; 
+                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; 
+                        $mail->Port       = 587; 
 
-                        // Keep the timeout and SSL overrides for Railway
                         $mail->Timeout    = 20; 
+                        
+                        // Because we are using an IP address instead of the name "smtp.gmail.com",
+                        // we MUST tell PHP not to panic that the SSL certificate name doesn't match the IP.
                         $mail->SMTPOptions = array(
                             'ssl' => array(
                                 'verify_peer' => false,
@@ -118,8 +120,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                         $mail->setFrom($mail->Username, 'Barangay KARES Portal');
                         $mail->addAddress($user['email']);
-    
-// ... rest of the email body code ...
+                        
+                    // ... rest of your email body setup ...
                         
                         $mail->isHTML(true);
                         $mail->Subject = 'Your KARES Login OTP';
