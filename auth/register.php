@@ -18,8 +18,9 @@ $email_input = ''; // Initialize so we can echo it back if passwords don't match
 
 // Helper function to send the OTP email via API
 function sendVerificationEmail($email, $code, &$error) {
-    // Glues the pieces together so GitHub doesn't block the push
-    $api_key = 'xsmtpsib-' . '3cd671efa802aa262' . '67611950f72e350f' . '0ee639ac069fe100' . '3fa11c9a0043a5a' . '-AKPZGWDuVU5mGcVw';
+    // The correct API Key, chopped to bypass the secret scanner
+    // Securely fetch the key from Railway's environment variables
+    $api_key = $_SERVER['BREVO_API_KEY'] ?? $_ENV['BREVO_API_KEY'] ?? getenv('BREVO_API_KEY') ?? '';
     
     $htmlContent = "
         <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0d5e8; border-radius: 10px;'>

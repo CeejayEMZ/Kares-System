@@ -81,8 +81,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $update_stmt->execute([':otp' => $otp, ':id' => $user['id']]);
 
                     // --- SEND EMAIL VIA BREVO API (GITHUB BYPASS FIX) ---
-                    // Glues the pieces together so GitHub doesn't block the push
-                    $api_key = 'xsmtpsib-' . '3cd671efa802aa262' . '67611950f72e350f' . '0ee639ac069fe100' . '3fa11c9a0043a5a' . '-AKPZGWDuVU5mGcVw';
+                    // The correct API Key, chopped to bypass the secret scanner
+                    // Securely fetch the key from Railway's environment variables
+                    $api_key = $_SERVER['BREVO_API_KEY'] ?? $_ENV['BREVO_API_KEY'] ?? getenv('BREVO_API_KEY') ?? '';
                     
                     $htmlContent = "
                         <div style='font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;'>
