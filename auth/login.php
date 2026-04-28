@@ -80,54 +80,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $update_stmt = $pdo->prepare("UPDATE users SET otp_code = :otp WHERE id = :id");
                     $update_stmt->execute([':otp' => $otp, ':id' => $user['id']]);
 
-                    // --- SEND EMAIL VIA BREVO API (GITHUB BYPASS FIX) ---
-                    // The correct API Key, chopped to bypass the secret scanner
-                    // Securely fetch the key from Railway's environment variables
+                    // --- SEND EMAIL VIA BREVO API ---
                     $api_key = $_SERVER['BREVO_API_KEY'] ?? $_ENV['BREVO_API_KEY'] ?? getenv('BREVO_API_KEY') ?? '';
                     
-                    $htmlContent = "
-                        <div style='font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;'>
-                            <h2 style='color: #3d143e; text-align: center;'>Login Verification</h2>
-                            <p style='color: #333; font-size: 16px;'>Hello,</p>
-                            <p style='color: #333; font-size: 16px;'>Please use the following One-Time Password to access your KARES account. This code is for a single use.</p>
-                            <div style='text-align: center; margin: 30px 0;'>
-                                <span style='background-color: #3d143e; color: #fff; padding: 15px 25px; font-size: 24px; font-weight: bold; border-radius: 5px; letter-spacing: 5px;'>{$otp}</span>
-                            </div>
-                            <p style='color: #777; font-size: 12px; text-align: center;'>If you did not request this login, please ignore this email.</p>
-                        </div>";
+                    if (!empty($api_key)) {
+                        $htmlContent = "
+                            <div style='font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;'>
+                                <h2 style='color: #3d143e; text-align: center;'>Login Verification</h2>
+                                <p style='color: #333; font-size: 16px;'>Hello,</p>
+                                <p style='color: #333; font-size: 16px;'>Please use the following One-Time Password to access your KARES account. This code is for a single use.</p>
+                                <div style='text-align: center; margin: 30px 0;'>
+                                    <span style='background-color: #3d143e; color: #fff; padding: 15px 25px; font-size: 24px; font-weight: bold; border-radius: 5px; letter-spacing: 5px;'>{$otp}</span>
+                                </div>
+                                <p style='color: #777; font-size: 12px; text-align: center;'>If you did not request this login, please ignore this email.</p>
+                            </div>";
 
-                    $data = [
-                        'sender' => ['name' => 'Barangay KARES Portal', 'email' => 'adminkares@gmail.com'],
-                        'to' => [['email' => $user['email']]],
-                        'subject' => 'Your KARES Login OTP',
-                        'htmlContent' => $htmlContent
-                    ];
+                        $data = [
+                            'sender' => ['name' => 'Barangay Kanluran KARES', 'email' => 'adminkares@gmail.com'],
+                            'to' => [['email' => $user['email']]],
+                            'subject' => 'Your KARES Login OTP',
+                            'htmlContent' => $htmlContent
+                        ];
 
-                    $ch = curl_init('https://api.brevo.com/v3/smtp/email');
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_POST, true);
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                        'accept: application/json',
-                        'api-key: ' . $api_key,
-                        'content-type: application/json'
-                    ]);
-                    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+                        $ch = curl_init('https://api.brevo.com/v3/smtp/email');
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($ch, CURLOPT_POST, true);
+                        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+                        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                            'accept: application/json',
+                            'api-key: ' . $api_key,
+                            'content-type: application/json'
+                        ]);
+                        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 
-                    $response = curl_exec($ch);
-                    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                    curl_close($ch);
+                        $response = curl_exec($ch);
+                        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                        curl_close($ch);
 
-                    if ($httpcode == 201 || $httpcode == 200 || $httpcode == 202) {
-                        // Set temporary session vars so we know who is trying to login
-                        $_SESSION['pending_login_id'] = $user['id'];
-                        $_SESSION['pending_remember'] = $remember_me;
-                        
-                        header("Location: verify_login.php");
-                        exit();
+                        if ($httpcode == 201 || $httpcode == 200 || $httpcode == 202) {
+                            // Set temporary session vars so we know who is trying to login
+                            $_SESSION['pending_login_id'] = $user['id'];
+                            $_SESSION['pending_remember'] = $remember_me;
+                            
+                            header("Location: verify_login.php");
+                            exit();
+                        } else {
+                            $error = "Failed to send OTP email via API. Please try again later.";
+                            error_log("Brevo API Error: " . $response);
+                        }
                     } else {
-                        $error = "Failed to send OTP email via API. Please try again later.";
-                        error_log("Brevo API Error: " . $response);
+                        $error = "System configuration error. Email service unavailable.";
+                        error_log("Brevo API Error: Missing API Key.");
                     }
                     
                 } else {
@@ -168,16 +171,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .login-form { display: flex; flex-direction: column; }
     .input-group { position: relative; margin-bottom: 15px; }
     .input-field { width: 100%; padding: 14px 20px; border: none; border-radius: 30px; font-size: 14px; background-color: #f4f4f4; color: #333; outline: none; }
-    .form-options { display: flex; flex-direction: column; gap: 10px; align-items: center; margin-top: 5px; margin-bottom: 30px; font-size: 13px; color: #cca8d6; }
+    
+    .form-options { display: flex; flex-direction: row; justify-content: space-between; align-items: center; margin-top: 5px; margin-bottom: 25px; font-size: 12px; color: #cca8d6; }
     .remember-me { display: flex; align-items: center; gap: 8px; cursor: pointer; }
     .remember-me input[type="checkbox"] { accent-color: #874791; width: 14px; height: 14px; }
-    .signup-link { color: #cca8d6; text-decoration: none; transition: color 0.3s; cursor: pointer; }
+    
+    .forgot-link { color: #cca8d6; text-decoration: none; font-weight: 600; transition: color 0.3s; }
+    .forgot-link:hover { color: white; }
+    
+    .action-row { display: flex; flex-direction: column; align-items: center; gap: 20px; margin-top: 5px; }
+    .signup-link { color: #b8a8cf; text-decoration: none; font-size: 13px; font-weight: 600; transition: color 0.3s; cursor: pointer; }
     .signup-link:hover { color: white; }
-    .btn-container { display: flex; justify-content: center; }
+    
     .sign-in-btn { background-color: #d6af3c; color: #111; border: none; padding: 12px 35px; border-radius: 30px; font-weight: 700; font-size: 14px; cursor: pointer; transition: background-color 0.3s; width: 100%; max-width: 200px;}
     .sign-in-btn:hover { background-color: #bfa035; }
-    .error-message { color: #ffb3b3; background: rgba(255, 0, 0, 0.1); padding: 10px; border-radius: 10px; font-size: 13px; margin-bottom: 15px; border: 1px solid rgba(255, 0, 0, 0.2); text-align: center; }
     
+    .error-message { color: #ffb3b3; background: rgba(255, 0, 0, 0.1); padding: 10px; border-radius: 10px; font-size: 13px; margin-bottom: 15px; border: 1px solid rgba(255, 0, 0, 0.2); text-align: center; }
     .toggle-pwd-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #a462a9; cursor: pointer; font-size: 16px; transition: 0.3s; }
     .toggle-pwd-btn:hover { color: #3d143e; }
 
@@ -193,9 +202,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         .right-section { border-top-left-radius: 80px; border-bottom-left-radius: 80px; padding: 60px 50px; }
         .login-title { font-size: 28px; text-align: left; margin-bottom: 35px; }
-        .form-options { flex-direction: row; justify-content: space-between; margin-bottom: 40px; font-size: 12px; }
-        .btn-container { justify-content: flex-end; }
-        .sign-in-btn { width: auto; font-size: 13px; }
+        
+        .form-options { font-size: 13px; margin-bottom: 30px; }
+        .action-row { flex-direction: row; justify-content: space-between; align-items: center; }
+        .sign-in-btn { width: auto; font-size: 13px; margin-left: auto; }
         .error-message { text-align: left; }
     }
   </style>
@@ -215,25 +225,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="right-section">
       <h2 class="login-title">Sign In</h2>
       <?php if (!empty($error)): ?>
-        <div class="error-message"><?= htmlspecialchars($error) ?></div>
+        <div class="error-message"><i class="fas fa-exclamation-circle mr-1"></i> <?= htmlspecialchars($error) ?></div>
       <?php endif; ?>
+      
       <form class="login-form" action="" method="POST" onsubmit="this.querySelector('.sign-in-btn').innerText = 'Sending OTP...'; this.querySelector('.sign-in-btn').style.opacity = '0.7';">
         <div class="input-group">
           <input type="text" name="username" class="input-field" placeholder="Email Address" value="<?= htmlspecialchars($username_input) ?>" required />
         </div>
+        
         <div class="input-group">
           <input type="password" name="password" id="login_pass" class="input-field" placeholder="Password" style="padding-right: 40px;" required />
           <button type="button" class="toggle-pwd-btn" onclick="togglePassword('login_pass', this)">
               <i class="fas fa-eye"></i>
           </button>
         </div>
+        
         <div class="form-options">
           <label class="remember-me"><input type="checkbox" name="remember" value="yes" /> Remember me</label>
-          <a href="register.php" class="signup-link">Don't have an account yet? Sign up.</a>
-          <a href="forgot_password.php" style="color: #cca8d6; text-decoration: none; font-size: 13px; float: right; margin-top: 5px;">Forgot Password?</a>
+          <a href="forgot_password.php" class="forgot-link">Forgot Password?</a>
         </div>
-        <div class="btn-container"><button type="submit" class="sign-in-btn">SIGN IN</button></div>
+        
+        <div class="action-row">
+          <a href="register.php" class="signup-link">Don't have an account yet? Sign up.</a>
+          <button type="submit" class="sign-in-btn">SIGN IN</button>
+        </div>
       </form>
+      
     </div>
   </div>
 
