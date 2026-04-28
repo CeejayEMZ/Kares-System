@@ -3,14 +3,6 @@
 session_start();
 require_once '../config/db_connect.php';
 
-// Include PHPMailer classes manually for email sending
-require_once '../vendor/Exception.php';
-require_once '../vendor/PHPMailer.php';
-require_once '../vendor/SMTP.php';
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
 // Security check
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../auth/login.php");
@@ -157,22 +149,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // ONLY send email if they want it
         if (!empty($citizen_email) && $wants_emails) {
-            $mail = new PHPMailer(true);
-            try {
-                $mail->isSMTP();
-                $mail->Host       = 'smtp.gmail.com';
-                $mail->SMTPAuth   = true;
-                $mail->Username   = 'adminkares@gmail.com'; 
-                $mail->Password   = 'vborsopcwunmcfxv'; 
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                $mail->Port       = 587;
+            // Securely fetch the API Key from Railway
+            $api_key = $_SERVER['BREVO_API_KEY'] ?? $_ENV['BREVO_API_KEY'] ?? getenv('BREVO_API_KEY') ?? '';
 
-                $mail->setFrom('adminkares@gmail.com', 'Barangay Kanluran KARES');
-                $mail->addAddress($citizen_email);
-
-                $mail->isHTML(true);
-                $mail->Subject = "KARES Request Received - {$request_id}";
-                $mail->Body    = "
+            if (!empty($api_key)) {
+                $htmlContent = "
                     <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0d5e8; border-radius: 10px;'>
                         <h2 style='color: #3d143e;'>Request Received</h2>
                         <p style='color: #555;'>Hello {$first_name},</p>
@@ -185,9 +166,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <p style='color: #999; font-size: 12px; margin-top:30px;'>Barangay Santo Rosario-Kanluran</p>
                     </div>
                 ";
-                $mail->AltBody = "Hello {$first_name}, we received your request for {$assistance_type}. Your Reference ID is {$request_id}. Please check the KARES portal for updates.";
-                $mail->send();
-            } catch (Exception $e) {}
+
+                $data = [
+                    'sender' => ['name' => 'Barangay Kanluran KARES', 'email' => 'adminkares@gmail.com'],
+                    'to' => [['email' => $citizen_email]],
+                    'subject' => "KARES Request Received - {$request_id}",
+                    'htmlContent' => $htmlContent
+                ];
+
+                $ch = curl_init('https://api.brevo.com/v3/smtp/email');
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    'accept: application/json',
+                    'api-key: ' . $api_key,
+                    'content-type: application/json'
+                ]);
+                curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+
+                $response = curl_exec($ch);
+                $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+
+                // If API fails, log it but let the user proceed normally
+                if ($httpcode != 201 && $httpcode != 200 && $httpcode != 202) {
+                    error_log("Brevo API Error in submit_request.php: " . $response);
+                }
+            } else {
+                error_log("Brevo API Error in submit_request.php: API Key missing from environment.");
+            }
         }
 
         header("Location: ../user/user_home.php?success=1&req_id=" . urlencode($request_id));

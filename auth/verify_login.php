@@ -3,13 +3,6 @@
 session_start();
 require_once '../config/db_connect.php'; 
 
-// Load PHPMailer classes
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-require_once '../vendor/Exception.php';
-require_once '../vendor/PHPMailer.php';
-require_once '../vendor/SMTP.php';
-
 // Ensure the user actually came from the login page
 if (!isset($_SESSION['pending_login_id'])) {
     header("Location: login.php?error=missing_session");
@@ -42,23 +35,11 @@ if (isset($_GET['action']) && $_GET['action'] == 'resend') {
     $update_stmt = $pdo->prepare("UPDATE users SET otp_code = :otp WHERE id = :id");
     $update_stmt->execute([':otp' => $new_otp, ':id' => $user_id]);
 
-    // Send new Email
-    $mail = new PHPMailer(true);
-    try {
-        $mail->isSMTP();
-        $mail->Host       = 'smtp.gmail.com'; 
-        $mail->SMTPAuth   = true;
-        $mail->Username   = 'adminkares@gmail.com'; 
-        $mail->Password   = 'vborsopcwunmcfxv'; 
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = 587;
+    // Securely fetch the API Key from Railway
+    $api_key = $_SERVER['BREVO_API_KEY'] ?? $_ENV['BREVO_API_KEY'] ?? getenv('BREVO_API_KEY') ?? '';
 
-        $mail->setFrom('adminkares@gmail.com', 'Barangay KARES Portal');
-        $mail->addAddress($user['email']);
-        
-        $mail->isHTML(true);
-        $mail->Subject = 'Your NEW KARES Login OTP';
-        $mail->Body    = "
+    if (!empty($api_key)) {
+        $htmlContent = "
         <div style='font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;'>
             <h2 style='color: #3d143e; text-align: center;'>New Login Verification</h2>
             <p style='color: #333; font-size: 16px;'>Hello,</p>
@@ -69,13 +50,39 @@ if (isset($_GET['action']) && $_GET['action'] == 'resend') {
             <p style='color: #777; font-size: 12px; text-align: center;'>If you did not request this login, please ignore this email.</p>
         </div>";
 
-        $mail->send();
-        $success = "A new code has been sent to your email.";
-    } catch (Exception $e) {
-        $error = "Failed to resend code.";
+        $data = [
+            'sender' => ['name' => 'Barangay KARES Portal', 'email' => 'adminkares@gmail.com'],
+            'to' => [['email' => $user['email']]],
+            'subject' => 'Your NEW KARES Login OTP',
+            'htmlContent' => $htmlContent
+        ];
+
+        $ch = curl_init('https://api.brevo.com/v3/smtp/email');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'accept: application/json',
+            'api-key: ' . $api_key,
+            'content-type: application/json'
+        ]);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+
+        $response = curl_exec($ch);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpcode == 201 || $httpcode == 200 || $httpcode == 202) {
+            $success = "A new code has been sent to your email.";
+        } else {
+            $error = "Failed to resend code via API. Please try again.";
+            error_log("Brevo API Error in verify_login.php (Resend): " . $response);
+        }
+    } else {
+        $error = "Failed to resend code. Server configuration missing.";
+        error_log("Brevo API Error in verify_login.php (Resend): API Key missing from environment.");
     }
 }
-
 
 // --- HANDLE OTP VERIFICATION ---
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otp'])) {

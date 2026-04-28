@@ -3,14 +3,6 @@
 session_start();
 require_once '../config/db_connect.php';
 
-// Include PHPMailer classes manually for email sending
-require_once '../vendor/Exception.php';
-require_once '../vendor/PHPMailer.php';
-require_once '../vendor/SMTP.php';
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
 // Security check: Only Admins can update statuses
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Admin') {
     header("Location: ../auth/login.php");
@@ -102,37 +94,11 @@ try {
 
             // ONLY SEND EMAIL IF email_alerts IS TRUE
             if ($wants_emails) {
-                $mail = new PHPMailer(true);
-                try {
-                    $mail->isSMTP();
-                    $mail->Host       = 'smtp.gmail.com';
-                    $mail->SMTPAuth   = true;
-                    
-                    // --- DEPLOYMENT FIX: SECURE CREDENTIALS ---
-                    $mail->Username   = getenv('SMTP_USER') ?: 'adminkares@gmail.com'; 
-                    $mail->Password   = getenv('SMTP_PASS') ?: 'your_local_app_password_here'; 
-                    // ------------------------------------------
-                    
-                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                    $mail->Port       = 587;
+                // Securely fetch the API Key from Railway
+                $api_key = $_SERVER['BREVO_API_KEY'] ?? $_ENV['BREVO_API_KEY'] ?? getenv('BREVO_API_KEY') ?? '';
 
-                    // --- RAILWAY NETWORK FIX ---
-                    $mail->Timeout = 15; // Don't hang forever
-                    $mail->SMTPOptions = array(
-                        'ssl' => array(
-                            'verify_peer' => false,
-                            'verify_peer_name' => false,
-                            'allow_self_signed' => true
-                        )
-                    );
-                    // ---------------------------
-
-                    $mail->setFrom($mail->Username, 'Barangay Kanluran KARES');
-                    $mail->addAddress($citizen_email);
-
-                    $mail->isHTML(true);
-                    $mail->Subject = "KARES Request Update: {$new_status}";
-                    $mail->Body    = "
+                if (!empty($api_key)) {
+                    $htmlContent = "
                         <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0d5e8; border-radius: 10px;'>
                             <h2 style='color: #3d143e;'>Update on Request: {$request_id}</h2>
                             <p style='color: #555;'>Hello {$first_name},</p>
@@ -143,13 +109,35 @@ try {
                             <p style='color: #999; font-size: 12px; margin-top:30px;'>Barangay Santo Rosario-Kanluran</p>
                         </div>
                     ";
-                    $mail->AltBody = "Hello {$first_name}, your request ({$request_id}) is now: {$new_status}.";
-                    
-                    $mail->send();
-                    
-                } catch (Exception $e) {
-                    // Fail silently or log error so the user isn't stuck on a white screen
-                    error_log("PHPMailer Error: " . $mail->ErrorInfo);
+
+                    $data = [
+                        'sender' => ['name' => 'Barangay Kanluran KARES', 'email' => 'adminkares@gmail.com'],
+                        'to' => [['email' => $citizen_email]],
+                        'subject' => "KARES Request Update: {$new_status}",
+                        'htmlContent' => $htmlContent
+                    ];
+
+                    $ch = curl_init('https://api.brevo.com/v3/smtp/email');
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_POST, true);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                        'accept: application/json',
+                        'api-key: ' . $api_key,
+                        'content-type: application/json'
+                    ]);
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+
+                    $response = curl_exec($ch);
+                    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                    curl_close($ch);
+
+                    // If API fails, log it but don't break the admin's redirect flow
+                    if ($httpcode != 201 && $httpcode != 200 && $httpcode != 202) {
+                        error_log("Brevo API Error in update_status.php: " . $response);
+                    }
+                } else {
+                    error_log("Brevo API Error in update_status.php: API Key missing from environment.");
                 }
             }
         }
