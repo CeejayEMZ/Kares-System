@@ -919,8 +919,9 @@ $request_history = $history_stmt->fetchAll();
             <div id="modal-header-title" class="bg-header-blue text-dark-violet p-4 text-center font-bold text-lg md:text-xl tracking-wide">Assistance Type</div>
             <div class="p-6 md:p-8">
                 <div id="sub-options-container" class="space-y-3 mb-8"></div>
-                <div class="flex justify-between items-center mt-6 px-0 md:px-2 gap-3 md:gap-4">
-                    <button onclick="closeSubModal()" class="text-header-blue border-2 border-header-blue px-4 md:px-6 py-2 md:py-3 rounded-full font-bold hover:bg-header-blue hover:text-white transition w-full text-sm md:text-lg">Cancel</button>
+                <div class="flex flex-col sm:flex-row justify-between items-center mt-6 px-0 md:px-2 gap-3 md:gap-4">
+                    <button onclick="closeSubModal()" class="text-header-blue border-2 border-header-blue px-4 md:px-6 py-2 md:py-3 rounded-full font-bold hover:bg-header-blue hover:text-white transition w-full sm:w-1/2 text-sm md:text-lg">Cancel</button>
+                    <button onclick="handleSelectionProceed()" class="bg-gold text-white px-4 md:px-6 py-2 md:py-3 rounded-full font-bold shadow-md hover:bg-yellow-600 transition w-full sm:w-1/2 text-sm md:text-lg">Proceed</button>
                 </div>
             </div>
         </div>
@@ -1671,6 +1672,18 @@ $request_history = $history_stmt->fetchAll();
     }
 
     function closeSubModal() { document.getElementById('selection-modal').classList.add('hidden'); }
+
+    // --- ADD THIS NEW FUNCTION RIGHT HERE ---
+    function handleSelectionProceed() {
+        const selected = document.querySelector('.option-pill.selected');
+        if (!selected) { 
+            alert("Please select a specific assistance type first."); 
+            return; 
+        }
+        // Opens the Data Privacy modal, which then opens the actual form
+        openPrivacyModal('request');
+    }
+    // ----------------------------------------
 
     function proceedToFormFinal() {
         const selected = document.querySelector('.option-pill.selected');
