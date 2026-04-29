@@ -169,21 +169,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .right-section { flex: 1.1; background: linear-gradient(170deg, #A462A9 10%, #4B184F 50%); padding: 40px 30px; display: flex; flex-direction: column; justify-content: center; }
     .login-title { color: white; font-size: 24px; font-weight: 600; margin-bottom: 25px; text-align: center; }
     .login-form { display: flex; flex-direction: column; }
+    
     .input-group { position: relative; margin-bottom: 15px; }
     .input-field { width: 100%; padding: 14px 20px; border: none; border-radius: 30px; font-size: 14px; background-color: #f4f4f4; color: #333; outline: none; }
     
-    .form-options { display: flex; flex-direction: row; justify-content: space-between; align-items: center; margin-top: 5px; margin-bottom: 25px; font-size: 12px; color: #cca8d6; }
-    .remember-me { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    /* FIX FOR TWO EYES BUG: Hides Microsoft Edge/Chrome native password reveal icon */
+    input::-ms-reveal, input::-ms-clear { display: none; }
+    
+    .form-options { display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-top: 5px; margin-bottom: 25px; font-size: 12px; color: #cca8d6; }
+    .remember-me { display: flex; align-items: center; gap: 8px; cursor: pointer; margin-top: 2px; }
     .remember-me input[type="checkbox"] { accent-color: #874791; width: 14px; height: 14px; }
     
+    .right-links { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; text-align: right; }
     .forgot-link { color: #cca8d6; text-decoration: none; font-weight: 600; transition: color 0.3s; }
     .forgot-link:hover { color: white; }
-    
-    .action-row { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 5px; }
-    .signup-link { color: #b8a8cf; text-decoration: none; font-size: 13px; font-weight: 600; transition: color 0.3s; cursor: pointer; white-space: nowrap; }
+    .signup-link { color: #b8a8cf; text-decoration: none; font-size: 12px; font-weight: 600; transition: color 0.3s; cursor: pointer; white-space: nowrap; }
     .signup-link:hover { color: white; }
     
-    .sign-in-btn { background-color: #d6af3c; color: #111; border: none; padding: 12px 35px; border-radius: 30px; font-weight: 700; font-size: 14px; cursor: pointer; transition: background-color 0.3s; width: 100%; max-width: 200px;}
+    .action-row { display: flex; flex-direction: column; align-items: center; margin-top: 5px; }
+    .sign-in-btn { background-color: #d6af3c; color: #111; border: none; padding: 12px 35px; border-radius: 30px; font-weight: 700; font-size: 14px; cursor: pointer; transition: background-color 0.3s; width: 100%; max-width: 200px; white-space: nowrap; }
     .sign-in-btn:hover { background-color: #bfa035; }
     
     .error-message { color: #ffb3b3; background: rgba(255, 0, 0, 0.1); padding: 10px; border-radius: 10px; font-size: 13px; margin-bottom: 15px; border: 1px solid rgba(255, 0, 0, 0.2); text-align: center; }
@@ -204,7 +208,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .login-title { font-size: 28px; text-align: left; margin-bottom: 35px; }
         
         .form-options { font-size: 13px; margin-bottom: 30px; }
-        .action-row { flex-direction: row; justify-content: space-between; align-items: center; }
+        .action-row { flex-direction: row; justify-content: flex-end; align-items: center; }
         .sign-in-btn { width: auto; font-size: 13px; margin-left: auto; }
         .error-message { text-align: left; }
     }
@@ -242,11 +246,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         <div class="form-options">
           <label class="remember-me"><input type="checkbox" name="remember" value="yes" /> Remember me</label>
-          <a href="forgot_password.php" class="forgot-link">Forgot Password?</a>
+          <div class="right-links">
+              <a href="forgot_password.php" class="forgot-link">Forgot Password?</a>
+              <a href="register.php" class="signup-link">Don't have an account yet? Sign up.</a>
+          </div>
         </div>
         
         <div class="action-row">
-          <a href="register.php" class="signup-link">Don't have an account yet? Sign up.</a>
           <button type="submit" class="sign-in-btn">SIGN IN</button>
         </div>
       </form>
