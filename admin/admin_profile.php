@@ -130,11 +130,6 @@ try {
     
     $avatar_letter = strtoupper(substr($display_name, 0, 1));
 
-    // --- FETCH ADMIN STATS ---
-    $pending_reqs = $pdo->query("SELECT COUNT(*) FROM assistance_requests WHERE status = 'Submitted'")->fetchColumn();
-    $pending_verifs = $pdo->query("SELECT COUNT(*) FROM user_verifications WHERE status = 'Pending'")->fetchColumn();
-    $total_citizens = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'Citizen'")->fetchColumn();
-
 } catch (PDOException $e) {
     die("Database error: " . $e->getMessage());
 }
@@ -162,7 +157,7 @@ try {
 
         <?= $ui_message ?>
 
-        <div class="bg-white rounded-[30px] shadow-sm p-8 flex flex-col md:flex-row items-center gap-8 mb-8 border border-gray-100 relative overflow-hidden">
+        <div class="bg-white rounded-[30px] shadow-sm p-8 flex flex-col md:flex-row items-center gap-8 mb-10 border border-gray-100 relative overflow-hidden">
             <div class="absolute top-0 right-0 p-6 opacity-5 pointer-events-none"><i class="fas fa-user-shield text-9xl text-[#3d143e]"></i></div>
             
             <div class="flex items-center gap-6 relative z-10">
@@ -184,38 +179,6 @@ try {
                     <h2 class="text-3xl font-black text-[#3d143e] capitalize tracking-tight"><?= htmlspecialchars($display_name) ?></h2>
                     <p class="text-[#c6943a] font-bold text-sm uppercase tracking-widest mt-1 mb-2">System Administrator</p>
                     <p class="text-gray-500 font-medium text-sm flex items-center gap-2"><i class="fas fa-envelope text-gray-400"></i> <?= htmlspecialchars($email) ?: 'No email set' ?></p>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white rounded-[30px] shadow-sm p-6 flex items-center gap-4 border border-gray-100 hover:-translate-y-1 transition transform duration-300">
-                <div class="w-14 h-14 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-2xl shadow-inner shrink-0">
-                    <i class="fas fa-file-invoice"></i>
-                </div>
-                <div>
-                    <h3 class="text-2xl font-black text-gray-800 leading-none"><?= $pending_reqs ?></h3>
-                    <p class="text-gray-500 font-medium text-xs uppercase tracking-wider mt-1">Pending Requests</p>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-[30px] shadow-sm p-6 flex items-center gap-4 border border-gray-100 hover:-translate-y-1 transition transform duration-300">
-                <div class="w-14 h-14 bg-yellow-50 text-yellow-600 rounded-full flex items-center justify-center text-2xl shadow-inner shrink-0">
-                    <i class="fas fa-id-card-alt"></i>
-                </div>
-                <div>
-                    <h3 class="text-2xl font-black text-gray-800 leading-none"><?= $pending_verifs ?></h3>
-                    <p class="text-gray-500 font-medium text-xs uppercase tracking-wider mt-1">Pending Verifications</p>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-[30px] shadow-sm p-6 flex items-center gap-4 border border-gray-100 hover:-translate-y-1 transition transform duration-300">
-                <div class="w-14 h-14 bg-green-50 text-green-500 rounded-full flex items-center justify-center text-2xl shadow-inner shrink-0">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div>
-                    <h3 class="text-2xl font-black text-gray-800 leading-none"><?= $total_citizens ?></h3>
-                    <p class="text-gray-500 font-medium text-xs uppercase tracking-wider mt-1">Total Citizens</p>
                 </div>
             </div>
         </div>

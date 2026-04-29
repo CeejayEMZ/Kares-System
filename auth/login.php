@@ -180,7 +180,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .forgot-link:hover { color: white; }
     
     .action-row { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 5px; }
-    .signup-link { color: #b8a8cf; text-decoration: none; font-size: 13px; font-weight: 600; transition: color 0.3s; cursor: pointer; }
+    .signup-link { color: #b8a8cf; text-decoration: none; font-size: 13px; font-weight: 600; transition: color 0.3s; cursor: pointer; white-space: nowrap; }
     .signup-link:hover { color: white; }
     
     .sign-in-btn { background-color: #d6af3c; color: #111; border: none; padding: 12px 35px; border-radius: 30px; font-weight: 700; font-size: 14px; cursor: pointer; transition: background-color 0.3s; width: 100%; max-width: 200px;}
