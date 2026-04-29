@@ -1000,10 +1000,11 @@ $request_history = $history_stmt->fetchAll();
             </div>
 
             <div class="form-section" id="step-3">
+                <div class="form-section" id="step-3">
                 <div class="space-y-4 md:space-y-6 px-0 sm:px-2 md:px-10">
-                    <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Region</label><input type="text" name="region" value="<?= htmlspecialchars($v_region ?? 'NCR') ?>" readonly class="reg-input bg-gray-200 text-gray-600"></div>
-                    <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">City</label><input type="text" name="city" value="<?= htmlspecialchars($v_city ?? 'Pateros') ?>" readonly class="reg-input bg-gray-200 text-gray-600"></div>
-                    <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Barangay</label><input type="text" name="brgy" value="<?= htmlspecialchars($v_brgy ?? 'Sto. Rosario-Kanluran') ?>" readonly class="reg-input bg-gray-200 text-gray-600"></div>
+                    <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Region</label><input type="text" name="region" value="<?= htmlspecialchars(!empty($v_region) ? $v_region : 'NCR') ?>" readonly class="reg-input bg-gray-200 text-gray-600"></div>
+                    <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">City</label><input type="text" name="city" value="<?= htmlspecialchars(!empty($v_city) ? $v_city : 'Pateros') ?>" readonly class="reg-input bg-gray-200 text-gray-600"></div>
+                    <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Barangay</label><input type="text" name="brgy" value="<?= htmlspecialchars(!empty($v_brgy) ? $v_brgy : 'Sto. Rosario-Kanluran') ?>" readonly class="reg-input bg-gray-200 text-gray-600"></div>
                     <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Street</label><input type="text" name="street" required class="reg-input" placeholder="Enter Street Name" value="<?= htmlspecialchars($v_street ?? '') ?>"></div>
                     <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">House/Lot/Blk No.</label><input type="text" name="house_no" class="reg-input" placeholder="Enter House/Lot/Blk" value="<?= htmlspecialchars($v_house ?? '') ?>"></div>
                 </div>
