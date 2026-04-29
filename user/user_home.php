@@ -928,7 +928,7 @@ $request_history = $history_stmt->fetchAll();
     </div>
 
     <div id="page-form" class="page hidden animate-fade py-8 md:py-12 px-4 flex flex-col items-center">
-       <div class="bg-dark-violet text-white px-8 md:px-10 py-3 rounded-2xl text-xl md:text-2xl font-bold shadow-lg mb-8 text-center mx-auto z-10 relative inline-block">Request Form</div>
+       <div id="form-dynamic-title" class="bg-dark-violet text-white px-8 md:px-10 py-3 rounded-2xl text-xl md:text-2xl font-bold shadow-lg mb-8 text-center mx-auto z-10 relative inline-block">Account Verification</div>
        
        <div class="bg-panel-blue rounded-[40px] w-full max-w-4xl mx-auto shadow-xl border border-white/50 p-6 md:p-12 -mt-14 pt-20 relative">
            
@@ -1705,6 +1705,9 @@ $request_history = $history_stmt->fetchAll();
         document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.step-item').forEach(c => { c.classList.remove('active', 'completed'); c.querySelector('.step-circle').innerHTML = ''; });
         
+        // Grab the title badge element
+        const titleBadge = document.getElementById('form-dynamic-title');
+
         if (isUserVerified) {
             for(let i=1; i<=5; i++) {
                 let section = document.getElementById('step-' + i);
@@ -1732,12 +1735,18 @@ $request_history = $history_stmt->fetchAll();
             document.getElementById('step-marker-6').classList.add('active');
             document.getElementById('btn-back-step6').setAttribute('onclick', "showPage('aid')");
 
+            // Since verified users skip straight to step 6, immediately make it say "Request Form"
+            if (titleBadge) titleBadge.innerText = "Request Form";
+
         } else {
             document.getElementById('global-applicant-name').classList.add('hidden');
             document.getElementById('applicant-span').innerText = '';
             document.getElementById('step-1').classList.add('active');
             document.getElementById('step-marker-1').classList.add('active');
             document.getElementById('btn-back-step6').setAttribute('onclick', "prevStep(6)");
+            
+            // Unverified users start at step 1, so make it say "Account Verification"
+            if (titleBadge) titleBadge.innerText = "Account Verification";
         }
     }
 
@@ -1824,6 +1833,12 @@ $request_history = $history_stmt->fetchAll();
         currentMarker.classList.remove('active'); currentMarker.classList.add('completed'); currentMarker.querySelector('.step-circle').innerHTML = '<i class="fas fa-check"></i>';
         document.getElementById('step-' + (currentStep + 1)).classList.add('active');
         document.getElementById('step-marker-' + (currentStep + 1)).classList.add('active');
+        
+        // Dynamically change to "Request Form" if they hit step 6
+        if ((currentStep + 1) === 6) {
+            const titleBadge = document.getElementById('form-dynamic-title');
+            if (titleBadge) titleBadge.innerText = "Request Form";
+        }
     }
 
     function prevStep(currentStep) {
@@ -1833,6 +1848,12 @@ $request_history = $history_stmt->fetchAll();
         let prevMarker = document.getElementById('step-marker-' + (currentStep - 1));
         prevMarker.classList.remove('completed'); prevMarker.classList.add('active'); prevMarker.querySelector('.step-circle').innerHTML = '';
         if(currentStep === 3) document.getElementById('global-applicant-name').classList.add('hidden');
+        
+        // Dynamically change back to "Account Verification" if they go backwards
+        if ((currentStep - 1) < 6) {
+            const titleBadge = document.getElementById('form-dynamic-title');
+            if (titleBadge) titleBadge.innerText = "Account Verification";
+        }
     }
 
     function formatSupabaseDate(dateString) {
