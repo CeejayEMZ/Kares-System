@@ -50,12 +50,12 @@ if (isset($_SESSION['user_id']) && isset($pdo)) {
             <i class="fas fa-users text-lg w-6"></i> Manage Citizens
         </a>
         
-        <a href="reports.php" class="flex items-center gap-3 px-5 py-3 rounded-xl font-semibold transition <?= ($current_page == 'reports.php') ? 'bg-[#c6943a] text-white shadow-md' : 'text-white/80 hover:bg-white/10 hover:text-white' ?>">
-            <i class="fas fa-chart-pie text-lg w-6"></i> Reports
-        </a>
-        
         <a href="verifications.php" class="flex items-center gap-3 px-5 py-3 rounded-xl font-semibold transition <?= ($current_page == 'verifications.php') ? 'bg-[#c6943a] text-white shadow-md' : 'text-white/80 hover:bg-white/10 hover:text-white' ?>">
             <i class="fas fa-id-card-alt text-lg w-6"></i> Verifications
+        </a>
+
+        <a href="reports.php" class="flex items-center gap-3 px-5 py-3 rounded-xl font-semibold transition <?= ($current_page == 'reports.php') ? 'bg-[#c6943a] text-white shadow-md' : 'text-white/80 hover:bg-white/10 hover:text-white' ?>">
+            <i class="fas fa-chart-pie text-lg w-6"></i> Reports
         </a>
     </nav>
     

@@ -411,11 +411,11 @@ $recent_activity = $recent_activity_stmt->fetchAll();
             </div>
 
             <div class="flex justify-end gap-4 pt-4 border-t border-gray-300">
-                <button type="submit" name="output_mode" value="download" onclick="document.getElementById('reportModal').classList.add('hidden')" class="bg-white text-[#5b8fb0] px-6 py-2.5 rounded-full font-bold shadow-md border-2 border-[#5b8fb0] hover:bg-[#5b8fb0] hover:text-white transition flex items-center">
-                    <i class="fas fa-file-download mr-2"></i> Download PDF
+                <button type="submit" name="output_mode" value="download" onclick="document.getElementById('reportModal').classList.add('hidden')" class="bg-[#3d143e] text-white px-6 py-2.5 rounded-full font-bold shadow-md border-2 border-[#3d143e] hover:bg-purple-900 transition flex items-center">
+                    <i class="fas fa-file-download mr-2 text-[#c6943a]"></i> Download PDF
                 </button>
                 <button type="submit" name="output_mode" value="print" onclick="document.getElementById('reportModal').classList.add('hidden')" class="bg-[#3d143e] text-white px-6 py-2.5 rounded-full font-bold shadow-md border-2 border-[#3d143e] hover:bg-purple-900 transition flex items-center">
-                    <i class="fas fa-print mr-2"></i> Print Report
+                    <i class="fas fa-print mr-2 text-[#c6943a]"></i> Print Report
                 </button>
             </div>
             

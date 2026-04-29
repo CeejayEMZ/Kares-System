@@ -12,6 +12,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Admin') {
 
 $aid_type = $_GET['assistance_type'] ?? 'All';
 $status = $_GET['status'] ?? 'All';
+$output_mode = $_GET['output_mode'] ?? 'print'; // NEW: Check if print or download
 
 // Formatting the Headers
 $display_aid_type = ($aid_type === 'All') ? 'All assistance request' : htmlspecialchars($aid_type);
@@ -84,6 +85,9 @@ else {
     <title>Official Report - KARES</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <style>
         /* Responsive shrinking to fit everything on a Portrait page */
         @media print {
@@ -130,12 +134,12 @@ else {
 <body class="bg-gray-100 text-gray-900 p-4 md:p-8">
     
     <div class="fixed bottom-6 right-6 no-print z-50">
-        <button onclick="window.print()" class="bg-[#3d143e] text-white px-8 py-4 rounded-full font-bold shadow-2xl hover:bg-purple-900 transition hover:-translate-y-1 transform flex items-center gap-3 text-lg border-4 border-white">
+        <button onclick="window.print()" class="bg-[#3d143e] text-white px-8 py-4 rounded-full font-bold shadow-2xl hover:bg-purple-900 transition hover:-translate-y-1 transform flex items-center gap-3 text-lg border-4 border-white" id="manual-print-btn">
             <i class="fas fa-print"></i> Print Document
         </button>
     </div>
 
-    <div class="print-container max-w-[1200px] mx-auto bg-white p-10 md:p-12 shadow-lg border border-gray-200 relative">
+    <div id="pdf-content" class="print-container max-w-[1200px] mx-auto bg-white p-10 md:p-12 shadow-lg border border-gray-200 relative">
         
         <div class="text-center mb-10 pb-6 border-b-4 border-[#3d143e]">
             <h1 class="text-3xl md:text-4xl font-black text-[#3d143e] tracking-tight mb-2">Assistance Request Report</h1>
@@ -266,7 +270,38 @@ else {
     
     <script>
         window.onload = function() {
-            setTimeout(() => { window.print(); }, 800);
+            const mode = "<?= htmlspecialchars($output_mode) ?>";
+            
+            if (mode === 'download') {
+                // Change the button text to show it's working
+                const printBtn = document.getElementById('manual-print-btn');
+                if(printBtn) {
+                    printBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+                    printBtn.classList.remove('hover:-translate-y-1');
+                }
+
+                // Grab the container that has all the report data
+                const element = document.getElementById('pdf-content');
+                
+                // Configure the PDF settings
+                const opt = {
+                    margin:       [0.5, 0.5, 0.5, 0.5], // Margins in inches
+                    filename:     'KARES_Report_<?= date('Y-m-d_H-i') ?>.pdf',
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true },
+                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+                };
+                
+                // Generate and download the PDF
+                html2pdf().set(opt).from(element).save().then(() => {
+                    // Close the tab automatically after the download finishes
+                    setTimeout(() => { window.close(); }, 1000);
+                });
+                
+            } else {
+                // Default behavior: trigger the browser's print screen
+                setTimeout(() => { window.print(); }, 800);
+            }
         };
     </script>
 </body>
