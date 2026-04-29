@@ -335,8 +335,8 @@ $recent_activity = $recent_activity_stmt->fetchAll();
             <button type="button" onclick="document.getElementById('reportModal').classList.add('hidden')" class="absolute top-6 right-6 text-gray-400 hover:text-gray-700 text-2xl"><i class="fas fa-times"></i></button>
             
             <div class="mb-8">
-                <h2 class="text-2xl font-bold text-[#3d143e] flex items-center gap-3"><i class="fas fa-file-pdf text-[#c6943a]"></i> Print Official Report</h2>
-                <p class="text-gray-500 text-sm mt-1">Select the parameters for your PDF export.</p>
+                <h2 class="text-2xl font-bold text-[#3d143e] flex items-center gap-3"><i class="fas fa-file-pdf text-[#c6943a]"></i> Generate Official Report</h2>
+                <p class="text-gray-500 text-sm mt-1">Select the parameters for your document export.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
@@ -410,11 +410,15 @@ $recent_activity = $recent_activity_stmt->fetchAll();
 
             </div>
 
-            <div class="flex justify-end pt-4 border-t border-gray-300">
-                <button type="submit" onclick="document.getElementById('reportModal').classList.add('hidden')" class="bg-white text-[#3d143e] px-8 py-2.5 rounded-full font-bold shadow-md border-2 border-[#3d143e] hover:bg-[#3d143e] hover:text-white transition flex items-center">
-                    <i class="fas fa-print mr-2"></i> Generate PDF
+            <div class="flex justify-end gap-4 pt-4 border-t border-gray-300">
+                <button type="submit" name="output_mode" value="download" onclick="document.getElementById('reportModal').classList.add('hidden')" class="bg-white text-[#5b8fb0] px-6 py-2.5 rounded-full font-bold shadow-md border-2 border-[#5b8fb0] hover:bg-[#5b8fb0] hover:text-white transition flex items-center">
+                    <i class="fas fa-file-download mr-2"></i> Download PDF
+                </button>
+                <button type="submit" name="output_mode" value="print" onclick="document.getElementById('reportModal').classList.add('hidden')" class="bg-[#3d143e] text-white px-6 py-2.5 rounded-full font-bold shadow-md border-2 border-[#3d143e] hover:bg-purple-900 transition flex items-center">
+                    <i class="fas fa-print mr-2"></i> Print Report
                 </button>
             </div>
+            
         </form>
     </div>
     
