@@ -89,9 +89,14 @@ else {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
-        /* Responsive shrinking to fit everything on a Portrait page */
+        * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        /* FIX: Prevents rows from being sliced in half across pages */
+        tr { page-break-inside: avoid; }
+
+        /* Responsive shrinking to fit everything on a page */
         @media print {
-            @page { margin: 10mm; } 
+            @page { margin: 10mm; size: landscape; } 
             body { 
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact; 
@@ -118,17 +123,16 @@ else {
                 word-wrap: break-word !important; 
                 overflow-wrap: break-word !important; 
                 white-space: normal !important; 
-                padding: 4px 6px !important; 
-                font-size: 10px !important; 
+                padding: 6px 8px !important; 
+                font-size: 11px !important; 
             }
             /* Shrink Headers for Print */
-            h1 { font-size: 22px !important; margin-bottom: 4px !important; }
-            h2 { font-size: 16px !important; }
-            .header-info p { font-size: 11px !important; margin: 2px 0 !important; }
+            h1 { font-size: 24px !important; margin-bottom: 4px !important; }
+            h2 { font-size: 18px !important; }
+            .header-info p { font-size: 12px !important; margin: 2px 0 !important; }
             .mb-10 { margin-bottom: 15px !important; }
             .pb-6 { padding-bottom: 10px !important; }
         }
-        * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-900 p-4 md:p-8">
@@ -167,7 +171,7 @@ else {
                 <thead>
                     <tr class="bg-[#3d143e] text-white">
                         <?php foreach($table_headers as $th): ?>
-                            <th class="border border-[#3d143e] px-4 py-2 font-bold uppercase tracking-wider text-[11px]"><?= $th ?></th>
+                            <th class="border border-[#3d143e] px-4 py-3 font-bold uppercase tracking-wider text-[11px]"><?= $th ?></th>
                         <?php endforeach; ?>
                     </tr>
                 </thead>
@@ -193,10 +197,10 @@ else {
                                         $verif = $row['is_verified'] ? 'Verified' : 'Unverified';
                                         $v_color = $row['is_verified'] ? 'text-green-600' : 'text-orange-500';
                                     ?>
-                                    <td class="border border-gray-200 px-4 py-2 font-bold text-gray-600 whitespace-nowrap">#<?= htmlspecialchars($row['id']) ?></td>
-                                    <td class="border border-gray-200 px-4 py-2 uppercase font-bold text-[#3d143e]"><?= htmlspecialchars($name) ?></td>
-                                    <td class="border border-gray-200 px-4 py-2" style="word-break: break-all;"><?= htmlspecialchars($row['email']) ?></td>
-                                    <td class="border border-gray-200 px-4 py-2 font-bold <?= $v_color ?>"><?= $verif ?></td>
+                                    <td class="border border-gray-200 px-4 py-3 font-bold text-gray-600 whitespace-nowrap">#<?= htmlspecialchars($row['id']) ?></td>
+                                    <td class="border border-gray-200 px-4 py-3 uppercase font-bold text-[#3d143e]"><?= htmlspecialchars($name) ?></td>
+                                    <td class="border border-gray-200 px-4 py-3" style="word-break: break-all;"><?= htmlspecialchars($row['email']) ?></td>
+                                    <td class="border border-gray-200 px-4 py-3 font-bold <?= $v_color ?>"><?= $verif ?></td>
                                 
                                 <?php elseif ($aid_type === 'System Activity Log'): ?>
                                     <?php 
@@ -214,11 +218,11 @@ else {
                                         $date = date('M j, Y g:i A', strtotime($row['activity_date']));
                                         $type_color = $row['type'] === 'Account Verification' ? 'text-blue-600' : 'text-green-600';
                                     ?>
-                                    <td class="border border-gray-200 px-4 py-2 font-bold <?= $type_color ?> whitespace-nowrap"><?= htmlspecialchars($row['type']) ?></td>
-                                    <td class="border border-gray-200 px-4 py-2 uppercase font-bold text-[#3d143e]"><?= htmlspecialchars($name) ?></td>
-                                    <td class="border border-gray-200 px-4 py-2"><?= htmlspecialchars($row['detail']) ?></td>
-                                    <td class="border border-gray-200 px-4 py-2 font-bold text-gray-600"><?= htmlspecialchars($row['status']) ?></td>
-                                    <td class="border border-gray-200 px-4 py-2 text-gray-500 whitespace-nowrap"><?= $date ?></td>
+                                    <td class="border border-gray-200 px-4 py-3 font-bold <?= $type_color ?> whitespace-nowrap"><?= htmlspecialchars($row['type']) ?></td>
+                                    <td class="border border-gray-200 px-4 py-3 uppercase font-bold text-[#3d143e]"><?= htmlspecialchars($name) ?></td>
+                                    <td class="border border-gray-200 px-4 py-3"><?= htmlspecialchars($row['detail']) ?></td>
+                                    <td class="border border-gray-200 px-4 py-3 font-bold text-gray-600"><?= htmlspecialchars($row['status']) ?></td>
+                                    <td class="border border-gray-200 px-4 py-3 text-gray-500 whitespace-nowrap"><?= $date ?></td>
 
                                 <?php else: ?>
                                     <?php 
@@ -245,12 +249,12 @@ else {
                                             if ($row['status'] === 'Declined') $proc_color = 'text-red-500';
                                         }
                                     ?>
-                                    <td class="border border-gray-200 px-4 py-2 font-bold text-[#5b8fb0] whitespace-nowrap"><?= htmlspecialchars($row['request_id']) ?></td>
-                                    <td class="border border-gray-200 px-4 py-2 uppercase font-bold text-[#3d143e]"><?= htmlspecialchars($name) ?></td>
-                                    <td class="border border-gray-200 px-4 py-2 text-gray-700"><?= htmlspecialchars($row['assistance_type']) ?></td>
-                                    <td class="border border-gray-200 px-4 py-2 text-gray-500 whitespace-nowrap"><?= $date_sub ?></td>
-                                    <td class="border border-gray-200 px-4 py-2 <?= $proc_color ?> font-medium whitespace-nowrap"><?= $date_proc ?></td>
-                                    <td class="border border-gray-200 px-4 py-2 font-bold text-gray-600 uppercase text-[10px]"><?= htmlspecialchars($row['status']) ?></td>
+                                    <td class="border border-gray-200 px-4 py-3 font-bold text-[#5b8fb0] whitespace-nowrap"><?= htmlspecialchars($row['request_id']) ?></td>
+                                    <td class="border border-gray-200 px-4 py-3 uppercase font-bold text-[#3d143e]"><?= htmlspecialchars($name) ?></td>
+                                    <td class="border border-gray-200 px-4 py-3 text-gray-700"><?= htmlspecialchars($row['assistance_type']) ?></td>
+                                    <td class="border border-gray-200 px-4 py-3 text-gray-500 whitespace-nowrap"><?= $date_sub ?></td>
+                                    <td class="border border-gray-200 px-4 py-3 <?= $proc_color ?> font-medium whitespace-nowrap"><?= $date_proc ?></td>
+                                    <td class="border border-gray-200 px-4 py-3 font-bold text-gray-600 uppercase text-[10px]"><?= htmlspecialchars($row['status']) ?></td>
                                 <?php endif; ?>
                             </tr>
                         <?php endforeach; ?>
@@ -273,33 +277,37 @@ else {
             const mode = "<?= htmlspecialchars($output_mode) ?>";
             
             if (mode === 'download') {
-                // Change the button text to show it's working
                 const printBtn = document.getElementById('manual-print-btn');
                 if(printBtn) {
                     printBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
                     printBtn.classList.remove('hover:-translate-y-1');
                 }
 
-                // Grab the container that has all the report data
                 const element = document.getElementById('pdf-content');
                 
-                // Configure the PDF settings
+                // FIX: Force Landscape orientation, avoid breaking rows, lock windowWidth
                 const opt = {
-                    margin:       [0.5, 0.5, 0.5, 0.5], // Margins in inches
+                    margin:       0.5, 
                     filename:     'KARES_Report_<?= date('Y-m-d_H-i') ?>.pdf',
-                    image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { scale: 2, useCORS: true },
-                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+                    image:        { type: 'jpeg', quality: 1 },
+                    html2canvas:  { 
+                        scale: 2, 
+                        useCORS: true,
+                        windowWidth: 1200 // Locks width so wide monitors don't distort it
+                    },
+                    jsPDF:        { 
+                        unit: 'in', 
+                        format: 'a4', 
+                        orientation: 'landscape' // Critical for wide tables
+                    },
+                    pagebreak:    { mode: 'avoid-all' } // Prevents cutting rows in half causing vertical stretch
                 };
                 
-                // Generate and download the PDF
                 html2pdf().set(opt).from(element).save().then(() => {
-                    // Close the tab automatically after the download finishes
-                    setTimeout(() => { window.close(); }, 1000);
+                    setTimeout(() => { window.close(); }, 1500);
                 });
                 
             } else {
-                // Default behavior: trigger the browser's print screen
                 setTimeout(() => { window.print(); }, 800);
             }
         };

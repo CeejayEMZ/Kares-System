@@ -104,24 +104,25 @@ try {
 
     <div class="flex-1 ml-64 p-10 min-h-screen">
         
-        <div class="flex flex-row justify-between items-start mb-8">
-            <div>
-                <h1 class="text-3xl font-bold text-[#3d143e] mb-2">Manage Citizens</h1>
-                <p class="text-gray-500 font-medium">Review registered accounts, verify citizen status, or view their request history.</p>
-            </div>
-            
-            <form method="GET" action="users.php" class="flex items-center bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
-                <div class="flex gap-2">
-                    <?php if(!empty($search)): ?>
-                        <a href="users.php" class="bg-red-50 text-red-500 border border-red-200 px-5 py-2 rounded-lg font-bold shadow-sm hover:bg-red-500 hover:text-white transition flex items-center mr-1"><i class="fas fa-times"></i></a>
-                    <?php endif; ?>
-                    <div class="relative">
-                        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Search name or email..." class="pl-11 pr-4 py-2.5 rounded-lg border border-gray-200 bg-gray-50 shadow-inner focus:ring-2 focus:ring-[#5b8fb0] outline-none w-64 md:w-80 text-sm text-gray-700 transition">
-                    </div>
-                    <button type="submit" class="bg-[#5b8fb0] text-white px-6 py-2.5 rounded-lg shadow-md hover:bg-[#4a7694] transition font-bold">Search</button>
+        <div class="mb-8 border-b border-gray-300 pb-6">
+            <div class="w-full flex justify-between items-center mt-2">
+                <div>
+                    <h1 class="text-3xl font-bold text-[#3d143e]"><i class="fas fa-users text-[#c6943a] mr-3"></i>Manage Citizens</h1>
+                    <p class="text-gray-500 mt-2 font-medium">Review registered accounts, verify citizen status, or view their request history.</p>
                 </div>
-            </form>
+                
+                <form action="users.php" method="GET" class="flex gap-2 mt-4">
+                    <?php if(!empty($search)): ?>
+                        <a href="users.php" class="bg-red-50 text-red-500 border border-red-200 px-4 py-2.5 rounded-lg font-bold shadow-sm hover:bg-red-500 hover:text-white transition flex items-center justify-center">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    <?php endif; ?>
+                    <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Search name or email..." class="px-4 py-2.5 rounded-lg border border-gray-200 bg-white shadow-sm focus:ring-2 focus:ring-[#5b8fb0] outline-none w-64 md:w-80 text-sm text-gray-700">
+                    <button type="submit" class="bg-[#5b8fb0] text-white px-5 py-2.5 rounded-lg shadow hover:bg-[#4a7694] transition">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
         </div>
 
         <?php if (isset($_GET['msg']) && $_GET['msg'] === 'Success'): ?>
