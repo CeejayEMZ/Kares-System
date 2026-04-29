@@ -179,7 +179,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .forgot-link { color: #cca8d6; text-decoration: none; font-weight: 600; transition: color 0.3s; }
     .forgot-link:hover { color: white; }
     
-    .action-row { display: flex; flex-direction: column; align-items: center; gap: 20px; margin-top: 5px; }
+    .action-row { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 5px; }
     .signup-link { color: #b8a8cf; text-decoration: none; font-size: 13px; font-weight: 600; transition: color 0.3s; cursor: pointer; }
     .signup-link:hover { color: white; }
     
