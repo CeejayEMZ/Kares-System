@@ -198,6 +198,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
 
+        // --- NEW: AUTO-SUBMIT VERIFICATION FOR UNVERIFIED USERS ---
+        // Check if the user is unverified and doesn't already have a pending verification
+        $check_user = $pdo->prepare("SELECT is_verified FROM users WHERE id = ?");
+        $check_user->execute([$user_id]);
+        $user_is_verified = $check_user->fetchColumn();
+
+        $check_verif = $pdo->prepare("SELECT status FROM user_verifications WHERE user_id = ? ORDER BY submitted_at DESC LIMIT 1");
+        $check_verif->execute([$user_id]);
+        $current_verif_status = $check_verif->fetchColumn();
+
+        if (!$user_is_verified && $current_verif_status !== 'Pending') {
+            // Automatically insert their submitted info into the user_verifications table
+            $ins_verif = $pdo->prepare("INSERT INTO user_verifications (
+                user_id, first_name, last_name, middle_name, name_extension, 
+                civil_status, family_income, mobile_number, gcash_number, email, 
+                region, city, barangay, street, house_no, 
+                em_first_name, em_last_name, em_middle_name, em_name_extension, 
+                em_contact, em_relationship, id_type, id_number, 
+                id_front_url, id_back_url, status
+            ) VALUES (
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending'
+            )");
+            
+            $ins_verif->execute([
+                $user_id, 
+                $_POST['fname'] ?? '', $_POST['lname'] ?? '', $_POST['mname'] ?? '', $_POST['ext'] ?? '',
+                $_POST['civil_status'] ?? '', $_POST['income'] ?? '', $_POST['mobile'] ?? '', $_POST['gcash'] ?? '', $citizen_email,
+                $_POST['region'] ?? 'NCR', $_POST['city'] ?? 'Pateros', $_POST['brgy'] ?? 'Sto. Rosario-Kanluran', $_POST['street'] ?? '', $_POST['house_no'] ?? '',
+                $_POST['em_fname'] ?? '', $_POST['em_lname'] ?? '', $_POST['em_mname'] ?? '', $_POST['em_ext'] ?? '',
+                $_POST['em_contact'] ?? '', $_POST['em_rel'] ?? '', $_POST['id_type'] ?? '', $_POST['id_number'] ?? '',
+                $id_front_path, $id_back_path // These now correctly use your file paths
+            ]);
+        }
+        // ---------------------------------------------------------
+
         header("Location: ../user/user_home.php?success=1&req_id=" . urlencode($request_id));
         exit();
 

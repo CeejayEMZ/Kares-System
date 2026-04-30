@@ -672,10 +672,11 @@ $request_history = $history_stmt->fetchAll();
               <h3 class="text-xl md:text-2xl font-bold text-dark-violet mb-2 relative z-10">Already Applied?</h3>
               <p class="text-gray-600 text-xs md:text-sm mb-6 relative z-10">Check the real-time status of your submitted assistance request.</p>
               
-              <div class="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-gray-100 relative z-10 text-center mb-6">
+              <!-- CHANGED THIS SECTION TO BE A CLICKABLE BUTTON -->
+              <button onclick="showPage('track')" class="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-gray-100 relative z-10 text-center mb-6 hover:bg-gray-50 hover:scale-105 transition duration-300 w-full cursor-pointer">
                   <i class="fas fa-clipboard-list text-3xl md:text-4xl text-gold mb-2 md:mb-3"></i>
                   <p class="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">Track your Reference ID</p>
-              </div>
+              </button>
               
               <button onclick="showPage('track')" class="bg-dark-violet text-white w-full py-3 md:py-3.5 rounded-full font-bold shadow-md hover:bg-purple-900 transition flex items-center justify-center gap-2 relative z-10 mt-auto">
                   Track Request <i class="fas fa-arrow-right"></i>
@@ -683,6 +684,25 @@ $request_history = $history_stmt->fetchAll();
           </div>
       </div>
       
+      <!-- RESTORED MISSION/VISION SECTION -->
+      <div class="w-full max-w-5xl mx-auto mb-8 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+          <div class="bg-white rounded-3xl p-6 md:p-10 shadow-xl border border-gray-100 flex flex-col items-center text-center">
+              <div class="w-16 h-16 bg-blue-50 text-header-blue rounded-full flex items-center justify-center text-3xl mb-4 shadow-sm border-2 border-blue-100"><i class="fas fa-eye"></i></div>
+              <h3 class="text-xl md:text-2xl font-bold text-dark-violet mb-3">Our Vision</h3>
+              <p class="text-gray-600 text-sm md:text-base leading-relaxed">
+                  Isang maunlad, mapayapa at malinis na pamayanan; may pananalig sa Diyos; may pagkakaisa ang pamunuan at nasasakupan upang mapanatili at mapangalagaan ang ating kalikasan at kapaligiran; maiangat ang antas ng pamumuhay at edukasyon ng mga mamamayan.
+              </p>
+          </div>
+          <div class="bg-white rounded-3xl p-6 md:p-10 shadow-xl border border-gray-100 flex flex-col items-center text-center">
+              <div class="w-16 h-16 bg-red-50 text-red-400 rounded-full flex items-center justify-center text-3xl mb-4 shadow-sm border-2 border-red-100"><i class="fas fa-bullseye"></i></div>
+              <h3 class="text-xl md:text-2xl font-bold text-dark-violet mb-3">Our Mission</h3>
+              <p class="text-gray-600 text-sm md:text-base leading-relaxed">
+                  Magkaroon ng maganda at maayos na pamamalakad sa Barangay na kung saan ay tapat na naglilingkod; nagpapatupad ng mga makatarungang alituntunin at batas ng Barangay; magandang ugnayan at pagtutulungan ng bawat pamilya.
+              </p>
+          </div>
+      </div>
+      <!-- END MISSION/VISION SECTION -->
+
       <div class="w-full max-w-5xl mx-auto mb-10">
           <div class="bg-white rounded-3xl p-6 md:p-10 shadow-xl border border-gray-100">
               <div class="text-center mb-8 md:mb-10">
@@ -1677,17 +1697,14 @@ $request_history = $history_stmt->fetchAll();
 
     function closeSubModal() { document.getElementById('selection-modal').classList.add('hidden'); }
 
-    // --- ADD THIS NEW FUNCTION RIGHT HERE ---
     function handleSelectionProceed() {
         const selected = document.querySelector('.option-pill.selected');
         if (!selected) { 
             alert("Please select a specific assistance type first."); 
             return; 
         }
-        // Opens the Data Privacy modal, which then opens the actual form
         openPrivacyModal('request');
     }
-    // ----------------------------------------
 
     function proceedToFormFinal() {
         const selected = document.querySelector('.option-pill.selected');
@@ -1709,7 +1726,6 @@ $request_history = $history_stmt->fetchAll();
         document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.step-item').forEach(c => { c.classList.remove('active', 'completed'); c.querySelector('.step-circle').innerHTML = ''; });
         
-        // Grab the title badge element
         const titleBadge = document.getElementById('form-dynamic-title');
 
         if (isUserVerified) {
@@ -1739,7 +1755,6 @@ $request_history = $history_stmt->fetchAll();
             document.getElementById('step-marker-6').classList.add('active');
             document.getElementById('btn-back-step6').setAttribute('onclick', "showPage('aid')");
 
-            // Since verified users skip straight to step 6, immediately make it say "Request Form"
             if (titleBadge) titleBadge.innerText = "Request Form";
 
         } else {
@@ -1749,7 +1764,6 @@ $request_history = $history_stmt->fetchAll();
             document.getElementById('step-marker-1').classList.add('active');
             document.getElementById('btn-back-step6').setAttribute('onclick', "prevStep(6)");
             
-            // Unverified users start at step 1, so make it say "Account Verification"
             if (titleBadge) titleBadge.innerText = "Account Verification";
         }
     }
@@ -1838,7 +1852,6 @@ $request_history = $history_stmt->fetchAll();
         document.getElementById('step-' + (currentStep + 1)).classList.add('active');
         document.getElementById('step-marker-' + (currentStep + 1)).classList.add('active');
         
-        // Dynamically change to "Request Form" if they hit step 6
         if ((currentStep + 1) === 6) {
             const titleBadge = document.getElementById('form-dynamic-title');
             if (titleBadge) titleBadge.innerText = "Request Form";
@@ -1853,7 +1866,6 @@ $request_history = $history_stmt->fetchAll();
         prevMarker.classList.remove('completed'); prevMarker.classList.add('active'); prevMarker.querySelector('.step-circle').innerHTML = '';
         if(currentStep === 3) document.getElementById('global-applicant-name').classList.add('hidden');
         
-        // Dynamically change back to "Account Verification" if they go backwards
         if ((currentStep - 1) < 6) {
             const titleBadge = document.getElementById('form-dynamic-title');
             if (titleBadge) titleBadge.innerText = "Account Verification";
