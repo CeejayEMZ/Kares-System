@@ -110,34 +110,38 @@ $v_fname = ''; $v_lname = ''; $v_mname = ''; $v_ext = ''; $v_civil = ''; $v_inco
 $v_contact = ''; $v_gcash = ''; $v_address = ''; $v_region = ''; $v_city = ''; $v_brgy = '';
 $v_house = ''; $v_street = ''; $v_em_fname = ''; $v_em_lname = ''; $v_em_mname = ''; 
 $v_em_ext = ''; $v_em_contact = ''; $v_em_rel = ''; $v_id_type = ''; $v_id_number = '';
+$v_mobile = '';
 
-$latest_verif_stmt = $pdo->prepare("SELECT * FROM user_verifications WHERE user_id = :uid ORDER BY submitted_at DESC LIMIT 1");
-$latest_verif_stmt->execute([':uid' => $user_id]);
+// ONLY auto-fill if the user is fully verified
+if ($is_verified) {
+    $latest_verif_stmt = $pdo->prepare("SELECT * FROM user_verifications WHERE user_id = :uid AND status = 'Approved' ORDER BY submitted_at DESC LIMIT 1");
+    $latest_verif_stmt->execute([':uid' => $user_id]);
 
-if ($verif_data = $latest_verif_stmt->fetch(PDO::FETCH_ASSOC)) {
-    $v_fname = $verif_data['first_name'] ?? '';
-    $v_lname = $verif_data['last_name'] ?? '';
-    $v_mname = $verif_data['middle_name'] ?? '';
-    $v_ext = $verif_data['name_extension'] ?? '';
-    $v_civil = $verif_data['civil_status'] ?? '';
-    $v_income = $verif_data['family_income'] ?? '';
-    $v_contact = $verif_data['mobile_number'] ?? '';
-    $v_gcash = $verif_data['gcash_number'] ?? '';
-    $v_address = $verif_data['address'] ?? '';
-    $v_region = $verif_data['region'] ?? 'NCR';
-    $v_city = $verif_data['city'] ?? 'Pateros';
-    $v_brgy = $verif_data['barangay'] ?? 'Sto. Rosario-Kanluran';
-    $v_house = $verif_data['house_no'] ?? '';
-    $v_street = $verif_data['street'] ?? '';
-    $v_em_fname = $verif_data['em_first_name'] ?? '';
-    $v_em_lname = $verif_data['em_last_name'] ?? '';
-    $v_em_mname = $verif_data['em_middle_name'] ?? ''; 
-    $v_em_ext = $verif_data['em_name_extension'] ?? ''; 
-    $v_em_contact = $verif_data['em_contact'] ?? '';
-    $v_em_rel = $verif_data['em_relationship'] ?? '';
-    $v_id_type = $verif_data['id_type'] ?? '';
-    $v_id_number = $verif_data['id_number'] ?? '';
-    $v_mobile = $v_contact; 
+    if ($verif_data = $latest_verif_stmt->fetch(PDO::FETCH_ASSOC)) {
+        $v_fname = $verif_data['first_name'] ?? '';
+        $v_lname = $verif_data['last_name'] ?? '';
+        $v_mname = $verif_data['middle_name'] ?? '';
+        $v_ext = $verif_data['name_extension'] ?? '';
+        $v_civil = $verif_data['civil_status'] ?? '';
+        $v_income = $verif_data['family_income'] ?? '';
+        $v_contact = $verif_data['mobile_number'] ?? '';
+        $v_gcash = $verif_data['gcash_number'] ?? '';
+        $v_address = $verif_data['address'] ?? '';
+        $v_region = $verif_data['region'] ?? 'NCR';
+        $v_city = $verif_data['city'] ?? 'Pateros';
+        $v_brgy = $verif_data['barangay'] ?? 'Sto. Rosario-Kanluran';
+        $v_house = $verif_data['house_no'] ?? '';
+        $v_street = $verif_data['street'] ?? '';
+        $v_em_fname = $verif_data['em_first_name'] ?? '';
+        $v_em_lname = $verif_data['em_last_name'] ?? '';
+        $v_em_mname = $verif_data['em_middle_name'] ?? ''; 
+        $v_em_ext = $verif_data['em_name_extension'] ?? ''; 
+        $v_em_contact = $verif_data['em_contact'] ?? '';
+        $v_em_rel = $verif_data['em_relationship'] ?? '';
+        $v_id_type = $verif_data['id_type'] ?? '';
+        $v_id_number = $verif_data['id_number'] ?? '';
+        $v_mobile = $v_contact; 
+    }
 }
 
 // Fetch Notifications for the logged-in user
@@ -364,9 +368,9 @@ $request_history = $history_stmt->fetchAll();
                         </a>
                     </div>
                 </div>
-            </div>
-            
-            <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="lg:hidden text-white text-xl sm:text-2xl focus:outline-none p-1 sm:p-2 ml-1">
+           </div>
+           
+           <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="lg:hidden text-white text-xl sm:text-2xl focus:outline-none p-1 sm:p-2 ml-1">
                  <i class="fas fa-bars"></i>
              </button>
 
