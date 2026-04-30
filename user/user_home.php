@@ -672,7 +672,6 @@ $request_history = $history_stmt->fetchAll();
               <h3 class="text-xl md:text-2xl font-bold text-dark-violet mb-2 relative z-10">Already Applied?</h3>
               <p class="text-gray-600 text-xs md:text-sm mb-6 relative z-10">Check the real-time status of your submitted assistance request.</p>
               
-              <!-- CHANGED THIS SECTION TO BE A CLICKABLE BUTTON -->
               <button onclick="showPage('track')" class="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-gray-100 relative z-10 text-center mb-6 hover:bg-gray-50 hover:scale-105 transition duration-300 w-full cursor-pointer">
                   <i class="fas fa-clipboard-list text-3xl md:text-4xl text-gold mb-2 md:mb-3"></i>
                   <p class="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">Track your Reference ID</p>
@@ -684,24 +683,42 @@ $request_history = $history_stmt->fetchAll();
           </div>
       </div>
       
-      <!-- RESTORED MISSION/VISION SECTION -->
-      <div class="w-full max-w-5xl mx-auto mb-8 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-          <div class="bg-white rounded-3xl p-6 md:p-10 shadow-xl border border-gray-100 flex flex-col items-center text-center">
-              <div class="w-16 h-16 bg-blue-50 text-header-blue rounded-full flex items-center justify-center text-3xl mb-4 shadow-sm border-2 border-blue-100"><i class="fas fa-eye"></i></div>
-              <h3 class="text-xl md:text-2xl font-bold text-dark-violet mb-3">Our Vision</h3>
-              <p class="text-gray-600 text-sm md:text-base leading-relaxed">
-                  Isang maunlad, mapayapa at malinis na pamayanan; may pananalig sa Diyos; may pagkakaisa ang pamunuan at nasasakupan upang mapanatili at mapangalagaan ang ating kalikasan at kapaligiran; maiangat ang antas ng pamumuhay at edukasyon ng mga mamamayan.
-              </p>
-          </div>
-          <div class="bg-white rounded-3xl p-6 md:p-10 shadow-xl border border-gray-100 flex flex-col items-center text-center">
-              <div class="w-16 h-16 bg-red-50 text-red-400 rounded-full flex items-center justify-center text-3xl mb-4 shadow-sm border-2 border-red-100"><i class="fas fa-bullseye"></i></div>
-              <h3 class="text-xl md:text-2xl font-bold text-dark-violet mb-3">Our Mission</h3>
-              <p class="text-gray-600 text-sm md:text-base leading-relaxed">
-                  Magkaroon ng maganda at maayos na pamamalakad sa Barangay na kung saan ay tapat na naglilingkod; nagpapatupad ng mga makatarungang alituntunin at batas ng Barangay; magandang ugnayan at pagtutulungan ng bawat pamilya.
-              </p>
+      <!-- OFFICIAL MANDATE SECTION -->
+      <div class="w-full max-w-5xl mx-auto mb-10">
+          <div class="bg-white rounded-3xl p-6 md:p-10 shadow-xl border border-gray-100">
+              <h2 class="text-2xl font-bold text-dark-violet mb-6 border-b pb-4 flex items-center gap-3">
+                  <i class="fas fa-file-contract text-gold"></i> Official Mandate & Declaration
+              </h2>
+
+              <div class="mb-8">
+                  <h3 class="text-lg font-bold text-[#5b8fb0] mb-2">I. Mandate</h3>
+                  <p class="text-gray-700 leading-relaxed text-sm md:text-base">Barangay Sto. Rosario Kanluran serves as the primary planning and implementing unit of government policies, plans, programs, projects, and activities in the community. It acts as a forum where the collective views of the people may be expressed, crystallized, and considered.</p>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div class="bg-panel-blue rounded-[20px] p-6 border border-white/50 shadow-sm">
+                      <h3 class="text-lg font-bold text-[#5b8fb0] mb-3 flex items-center gap-2"><i class="fas fa-eye text-gold"></i> II. Vision</h3>
+                      <p class="text-gray-700 text-sm leading-relaxed">A Barangay that continuously strive from economic growth, for peaceful and orderly community, for clean and green environment and for public unity that aspires productive and quality life.</p>
+                  </div>
+                  <div class="bg-panel-blue rounded-[20px] p-6 border border-white/50 shadow-sm">
+                      <h3 class="text-lg font-bold text-[#5b8fb0] mb-3 flex items-center gap-2"><i class="fas fa-bullseye text-gold"></i> III. Mission</h3>
+                      <p class="text-gray-700 text-sm leading-relaxed">To deliver quality and reliable public service and to carry out the mandates of honesty, transparency and good governance.</p>
+                  </div>
+              </div>
+
+              <div>
+                  <h3 class="text-lg font-bold text-[#5b8fb0] mb-3">IV. Service Pledge</h3>
+                  <p class="text-dark-violet font-bold mb-4">We commit to:</p>
+                  <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+                      <div class="flex items-start gap-3">
+                          <i class="fas fa-check-circle text-green-500 text-lg mt-0.5"></i>
+                          <p class="text-gray-700 text-sm md:text-base"><strong class="text-dark-violet">Promptness:</strong> We will attend to your needs and concerns promptly and without delay.</p>
+                      </div>
+                  </div>
+              </div>
           </div>
       </div>
-      <!-- END MISSION/VISION SECTION -->
+      <!-- END OFFICIAL MANDATE SECTION -->
 
       <div class="w-full max-w-5xl mx-auto mb-10">
           <div class="bg-white rounded-3xl p-6 md:p-10 shadow-xl border border-gray-100">
