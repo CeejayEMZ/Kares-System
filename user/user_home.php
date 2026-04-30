@@ -672,6 +672,7 @@ $request_history = $history_stmt->fetchAll();
               <h3 class="text-xl md:text-2xl font-bold text-dark-violet mb-2 relative z-10">Already Applied?</h3>
               <p class="text-gray-600 text-xs md:text-sm mb-6 relative z-10">Check the real-time status of your submitted assistance request.</p>
               
+              <!-- CHANGED THIS SECTION TO BE A CLICKABLE BUTTON -->
               <button onclick="showPage('track')" class="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-gray-100 relative z-10 text-center mb-6 hover:bg-gray-50 hover:scale-105 transition duration-300 w-full cursor-pointer">
                   <i class="fas fa-clipboard-list text-3xl md:text-4xl text-gold mb-2 md:mb-3"></i>
                   <p class="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">Track your Reference ID</p>
