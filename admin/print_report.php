@@ -12,7 +12,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Admin') {
 
 $aid_type = $_GET['assistance_type'] ?? 'All';
 $status = $_GET['status'] ?? 'All';
-$output_mode = $_GET['output_mode'] ?? 'print'; // NEW: Check if print or download
+$output_mode = $_GET['output_mode'] ?? 'print'; 
 
 // Formatting the Headers
 $display_aid_type = ($aid_type === 'All') ? 'All assistance request' : htmlspecialchars($aid_type);
@@ -93,13 +93,12 @@ else {
         tr { page-break-inside: avoid; }
 
         @media print {
-            /* FIX: margin: 0 removes the browser-generated URL, date, and page numbers */
             @page { margin: 0; size: landscape; } 
             body { 
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact; 
                 background-color: white !important; 
-                padding: 10mm !important; /* Re-adds padding safely inside the page */
+                padding: 10mm !important; 
                 margin: 0 !important;
             }
             .no-print { display: none !important; }
@@ -146,7 +145,6 @@ else {
             <h1 class="text-3xl md:text-4xl font-black text-[#3d143e] tracking-tight mb-2">Assistance Request Report</h1>
             <h2 class="text-lg md:text-xl font-bold text-[#c6943a] uppercase tracking-widest">Barangay Kanluran</h2>
             
-            <!-- FIX: Header text set to standard black -->
             <div class="header-info mt-6 flex flex-col items-center justify-center gap-1 text-sm font-bold text-black">
                 <p class="text-base">Type of Assistance: <span><?= $display_aid_type ?></span></p>
                 
@@ -178,7 +176,6 @@ else {
                         <?php foreach($records as $index => $row): ?>
                             <?php $bg_class = ($index % 2 === 0) ? 'bg-white' : 'bg-gray-50'; ?>
                             
-                            <!-- FIX: Removed all dynamic color classes. Text is forced to black. Borders thickened. -->
                             <tr class="<?= $bg_class ?>">
                                 <?php if ($aid_type === 'Citizens Masterlist'): ?>
                                     <?php 
@@ -277,10 +274,9 @@ else {
 
                 const element = document.getElementById('pdf-content');
                 
-                // FIX: Force element to a pixel width to prevent wide-screen cutoff
                 const originalMaxWidth = element.style.maxWidth;
-                element.style.maxWidth = '1050px';
-                element.style.width = '1050px';
+                element.style.maxWidth = '1120px'; 
+                element.style.width = '1120px';
                 
                 const opt = {
                     margin:       0.3, 
@@ -288,7 +284,8 @@ else {
                     image:        { type: 'jpeg', quality: 1 },
                     html2canvas:  { 
                         scale: 2, 
-                        useCORS: true
+                        useCORS: true,
+                        windowWidth: 1120 
                     },
                     jsPDF:        { 
                         unit: 'in', 
@@ -299,7 +296,6 @@ else {
                 };
                 
                 html2pdf().set(opt).from(element).save().then(() => {
-                    // Restore styles
                     element.style.maxWidth = originalMaxWidth;
                     element.style.width = '';
                     
