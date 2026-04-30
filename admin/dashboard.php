@@ -61,6 +61,7 @@ $released_req = $pdo->query("SELECT COUNT(*) FROM assistance_requests WHERE stat
 $total_users = $pdo->query("SELECT COUNT(*) FROM users WHERE role != 'Admin'")->fetchColumn();
 $verified_users = $pdo->query("SELECT COUNT(*) FROM users WHERE role != 'Admin' AND is_verified = TRUE")->fetchColumn();
 $unverified_users = $total_users - $verified_users;
+$pending_verifs = $pdo->query("SELECT COUNT(*) FROM user_verifications WHERE status = 'Pending'")->fetchColumn(); // NEW QUERY
 
 $recent_requests = $pdo->query("SELECT request_id, first_name, last_name, assistance_type, status, date_submitted FROM assistance_requests ORDER BY date_submitted DESC LIMIT 5")->fetchAll();
 ?>
@@ -152,7 +153,7 @@ $recent_requests = $pdo->query("SELECT request_id, first_name, last_name, assist
         </div>
 
         <h2 class="text-lg font-bold text-[#3d143e] mb-3"><i class="fas fa-users text-[#c6943a] mr-2"></i> Registered Citizens</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
             <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center justify-between">
                 <div>
                     <p class="text-gray-500 text-xs font-bold uppercase mb-1 tracking-widest">Total Users</p>
@@ -169,10 +170,17 @@ $recent_requests = $pdo->query("SELECT request_id, first_name, last_name, assist
             </div>
             <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center justify-between">
                 <div>
-                    <p class="text-gray-500 text-xs font-bold uppercase mb-1 tracking-widest">Unverified Accounts</p>
+                    <p class="text-gray-500 text-xs font-bold uppercase mb-1 tracking-widest">Unverified</p>
                     <h3 class="text-2xl font-black text-orange-500"><?= $unverified_users ?></h3>
                 </div>
                 <div class="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center text-orange-500 text-xl"><i class="fas fa-user-clock"></i></div>
+            </div>
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-xs font-bold uppercase mb-1 tracking-widest">Pending Verifs</p>
+                    <h3 class="text-2xl font-black text-yellow-600"><?= $pending_verifs ?></h3>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-yellow-50 flex items-center justify-center text-yellow-500 text-xl"><i class="fas fa-id-card-clip"></i></div>
             </div>
         </div>
 
