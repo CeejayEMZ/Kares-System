@@ -209,16 +209,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $current_verif_status = $check_verif->fetchColumn();
 
         if (!$user_is_verified && $current_verif_status !== 'Pending') {
+            // Concatenate the address fields into a single string
+            $house_no = $_POST['house_no'] ?? '';
+            $street = $_POST['street'] ?? '';
+            $brgy = $_POST['brgy'] ?? 'Sto. Rosario-Kanluran';
+            $city = $_POST['city'] ?? 'Pateros';
+            
+            // Build the full address, filtering out empty parts
+            $address_parts = array_filter([$house_no, $street, $brgy, $city]);
+            $full_address = implode(' ', $address_parts);
+
             // Automatically insert their submitted info into the user_verifications table
             $ins_verif = $pdo->prepare("INSERT INTO user_verifications (
                 user_id, first_name, last_name, middle_name, name_extension, 
                 civil_status, family_income, mobile_number, contact_number, gcash_number, email, 
-                region, city, barangay, street, house_no, 
+                region, city, barangay, street, house_no, address,
                 em_first_name, em_last_name, em_middle_name, em_name_extension, 
                 em_contact, em_relationship, id_type, id_number, 
                 id_front_path, id_back_path, status
             ) VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending'
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending'
             )");
             
             $ins_verif->execute([
@@ -228,7 +238,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_POST['mobile'] ?? '', // Fills mobile_number
                 $_POST['mobile'] ?? '', // Fills contact_number simultaneously
                 $_POST['gcash'] ?? '', $citizen_email,
-                $_POST['region'] ?? 'NCR', $_POST['city'] ?? 'Pateros', $_POST['brgy'] ?? 'Sto. Rosario-Kanluran', $_POST['street'] ?? '', $_POST['house_no'] ?? '',
+                $_POST['region'] ?? 'NCR', $city, $brgy, $street, $house_no, $full_address,
                 $_POST['em_fname'] ?? '', $_POST['em_lname'] ?? '', $_POST['em_mname'] ?? '', $_POST['em_ext'] ?? '',
                 $_POST['em_contact'] ?? '', $_POST['em_rel'] ?? '', $_POST['id_type'] ?? '', $_POST['id_number'] ?? '',
                 $id_front_path, $id_back_path 
