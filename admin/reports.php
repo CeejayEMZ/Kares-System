@@ -170,7 +170,7 @@ $recent_activity = $recent_activity_stmt->fetchAll();
                 <p class="text-gray-600 font-medium mt-1">Visual breakdown of citizen assistance and system health.</p>
             </div>
             <button onclick="document.getElementById('reportModal').classList.remove('hidden')" class="bg-[#3d143e] text-white px-6 py-3 rounded-xl font-bold shadow hover:bg-purple-900 transition flex items-center hover:-translate-y-1 transform">
-                <i class="fas fa-file-pdf mr-2 text-[#c6943a]"></i> Print Official Report
+                <i class="fas fa-file-pdf mr-2 text-[#c6943a]"></i> Generate Official Report
             </button>
         </div>
 

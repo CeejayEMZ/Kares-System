@@ -69,7 +69,6 @@ else {
     $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $total_count = count($records);
     
-    // FIXED: Dynamic Column Header based on the Status Filter!
     $dynamic_date_header = 'Date Processed';
     if ($status === 'Approved') $dynamic_date_header = 'Date Approved';
     if ($status === 'Released') $dynamic_date_header = 'Date Released';
@@ -91,17 +90,16 @@ else {
     <style>
         * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        /* FIX: Prevents rows from being sliced in half across pages */
         tr { page-break-inside: avoid; }
 
-        /* Responsive shrinking to fit everything on a page */
         @media print {
-            @page { margin: 10mm; size: landscape; } 
+            /* FIX: margin: 0 removes the browser-generated URL, date, and page numbers */
+            @page { margin: 0; size: landscape; } 
             body { 
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact; 
                 background-color: white !important; 
-                padding: 0 !important; 
+                padding: 10mm !important; /* Re-adds padding safely inside the page */
                 margin: 0 !important;
             }
             .no-print { display: none !important; }
@@ -126,7 +124,6 @@ else {
                 padding: 6px 8px !important; 
                 font-size: 11px !important; 
             }
-            /* Shrink Headers for Print */
             h1 { font-size: 24px !important; margin-bottom: 4px !important; }
             h2 { font-size: 18px !important; }
             .header-info p { font-size: 12px !important; margin: 2px 0 !important; }
@@ -149,21 +146,22 @@ else {
             <h1 class="text-3xl md:text-4xl font-black text-[#3d143e] tracking-tight mb-2">Assistance Request Report</h1>
             <h2 class="text-lg md:text-xl font-bold text-[#c6943a] uppercase tracking-widest">Barangay Kanluran</h2>
             
-            <div class="header-info mt-6 flex flex-col items-center justify-center gap-1 text-sm font-bold text-[#5b8fb0]">
-                <p class="text-base text-[#3d143e]">Type of Assistance: <span class="text-[#5b8fb0] font-black"><?= $display_aid_type ?></span></p>
+            <!-- FIX: Header text set to standard black -->
+            <div class="header-info mt-6 flex flex-col items-center justify-center gap-1 text-sm font-bold text-black">
+                <p class="text-base">Type of Assistance: <span><?= $display_aid_type ?></span></p>
                 
                 <?php if (!in_array($aid_type, ['Citizens Masterlist', 'System Activity Log'])): ?>
-                    <p class="text-base text-[#3d143e]">Status Filter: <span class="text-[#5b8fb0] font-black"><?= htmlspecialchars($status) ?></span></p>
+                    <p class="text-base">Status Filter: <span><?= htmlspecialchars($status) ?></span></p>
                 <?php endif; ?>
                 
-                <p class="mt-2 text-gray-500">Date: <?= $current_date ?></p>
-                <p class="text-gray-500">Time: <?= $current_time ?></p>
+                <p class="mt-2 font-medium">Date: <?= $current_date ?></p>
+                <p class="font-medium">Time: <?= $current_time ?></p>
             </div>
         </div>
 
         <div class="mb-4 flex items-end justify-between">
             <h3 class="text-xl font-black text-[#3d143e]">Records</h3>
-            <p class="font-bold text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-200 text-sm">Total Rows: <span class="text-[#3d143e] text-base"><?= $total_count ?></span></p>
+            <p class="font-bold text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-300 text-sm">Total Rows: <span class="text-black text-base"><?= $total_count ?></span></p>
         </div>
 
         <div class="overflow-x-auto w-full">
@@ -171,7 +169,7 @@ else {
                 <thead>
                     <tr class="bg-[#3d143e] text-white">
                         <?php foreach($table_headers as $th): ?>
-                            <th class="border border-[#3d143e] px-4 py-3 font-bold uppercase tracking-wider text-[11px]"><?= $th ?></th>
+                            <th class="border border-gray-400 px-4 py-3 font-bold uppercase tracking-wider text-[11px]"><?= $th ?></th>
                         <?php endforeach; ?>
                     </tr>
                 </thead>
@@ -180,6 +178,7 @@ else {
                         <?php foreach($records as $index => $row): ?>
                             <?php $bg_class = ($index % 2 === 0) ? 'bg-white' : 'bg-gray-50'; ?>
                             
+                            <!-- FIX: Removed all dynamic color classes. Text is forced to black. Borders thickened. -->
                             <tr class="<?= $bg_class ?>">
                                 <?php if ($aid_type === 'Citizens Masterlist'): ?>
                                     <?php 
@@ -195,12 +194,11 @@ else {
                                         }
 
                                         $verif = $row['is_verified'] ? 'Verified' : 'Unverified';
-                                        $v_color = $row['is_verified'] ? 'text-green-600' : 'text-orange-500';
                                     ?>
-                                    <td class="border border-gray-200 px-4 py-3 font-bold text-gray-600 whitespace-nowrap">#<?= htmlspecialchars($row['id']) ?></td>
-                                    <td class="border border-gray-200 px-4 py-3 uppercase font-bold text-[#3d143e]"><?= htmlspecialchars($name) ?></td>
-                                    <td class="border border-gray-200 px-4 py-3" style="word-break: break-all;"><?= htmlspecialchars($row['email']) ?></td>
-                                    <td class="border border-gray-200 px-4 py-3 font-bold <?= $v_color ?>"><?= $verif ?></td>
+                                    <td class="border border-gray-400 px-4 py-3 font-bold text-black whitespace-nowrap">#<?= htmlspecialchars($row['id']) ?></td>
+                                    <td class="border border-gray-400 px-4 py-3 uppercase font-bold text-black"><?= htmlspecialchars($name) ?></td>
+                                    <td class="border border-gray-400 px-4 py-3 text-black" style="word-break: break-all;"><?= htmlspecialchars($row['email']) ?></td>
+                                    <td class="border border-gray-400 px-4 py-3 font-bold text-black"><?= $verif ?></td>
                                 
                                 <?php elseif ($aid_type === 'System Activity Log'): ?>
                                     <?php 
@@ -216,13 +214,12 @@ else {
                                         }
 
                                         $date = date('M j, Y g:i A', strtotime($row['activity_date']));
-                                        $type_color = $row['type'] === 'Account Verification' ? 'text-blue-600' : 'text-green-600';
                                     ?>
-                                    <td class="border border-gray-200 px-4 py-3 font-bold <?= $type_color ?> whitespace-nowrap"><?= htmlspecialchars($row['type']) ?></td>
-                                    <td class="border border-gray-200 px-4 py-3 uppercase font-bold text-[#3d143e]"><?= htmlspecialchars($name) ?></td>
-                                    <td class="border border-gray-200 px-4 py-3"><?= htmlspecialchars($row['detail']) ?></td>
-                                    <td class="border border-gray-200 px-4 py-3 font-bold text-gray-600"><?= htmlspecialchars($row['status']) ?></td>
-                                    <td class="border border-gray-200 px-4 py-3 text-gray-500 whitespace-nowrap"><?= $date ?></td>
+                                    <td class="border border-gray-400 px-4 py-3 font-bold text-black whitespace-nowrap"><?= htmlspecialchars($row['type']) ?></td>
+                                    <td class="border border-gray-400 px-4 py-3 uppercase font-bold text-black"><?= htmlspecialchars($name) ?></td>
+                                    <td class="border border-gray-400 px-4 py-3 text-black"><?= htmlspecialchars($row['detail']) ?></td>
+                                    <td class="border border-gray-400 px-4 py-3 font-bold text-black"><?= htmlspecialchars($row['status']) ?></td>
+                                    <td class="border border-gray-400 px-4 py-3 text-black whitespace-nowrap"><?= $date ?></td>
 
                                 <?php else: ?>
                                     <?php 
@@ -238,34 +235,29 @@ else {
                                         }
                                         
                                         $date_sub = date('M j, Y g:i A', strtotime($row['date_submitted']));
-                                        
                                         $date_proc = '---';
-                                        $proc_color = 'text-gray-500';
                                         
                                         if (in_array($row['status'], ['Approved', 'Released', 'Declined']) && !empty($row['date_updated'])) {
                                             $date_proc = date('M j, Y g:i A', strtotime($row['date_updated']));
-                                            if ($row['status'] === 'Approved') $proc_color = 'text-green-600';
-                                            if ($row['status'] === 'Released') $proc_color = 'text-purple-600';
-                                            if ($row['status'] === 'Declined') $proc_color = 'text-red-500';
                                         }
                                     ?>
-                                    <td class="border border-gray-200 px-4 py-3 font-bold text-[#5b8fb0] whitespace-nowrap"><?= htmlspecialchars($row['request_id']) ?></td>
-                                    <td class="border border-gray-200 px-4 py-3 uppercase font-bold text-[#3d143e]"><?= htmlspecialchars($name) ?></td>
-                                    <td class="border border-gray-200 px-4 py-3 text-gray-700"><?= htmlspecialchars($row['assistance_type']) ?></td>
-                                    <td class="border border-gray-200 px-4 py-3 text-gray-500 whitespace-nowrap"><?= $date_sub ?></td>
-                                    <td class="border border-gray-200 px-4 py-3 <?= $proc_color ?> font-medium whitespace-nowrap"><?= $date_proc ?></td>
-                                    <td class="border border-gray-200 px-4 py-3 font-bold text-gray-600 uppercase text-[10px]"><?= htmlspecialchars($row['status']) ?></td>
+                                    <td class="border border-gray-400 px-4 py-3 font-bold text-black whitespace-nowrap"><?= htmlspecialchars($row['request_id']) ?></td>
+                                    <td class="border border-gray-400 px-4 py-3 uppercase font-bold text-black"><?= htmlspecialchars($name) ?></td>
+                                    <td class="border border-gray-400 px-4 py-3 text-black"><?= htmlspecialchars($row['assistance_type']) ?></td>
+                                    <td class="border border-gray-400 px-4 py-3 text-black whitespace-nowrap"><?= $date_sub ?></td>
+                                    <td class="border border-gray-400 px-4 py-3 font-medium text-black whitespace-nowrap"><?= $date_proc ?></td>
+                                    <td class="border border-gray-400 px-4 py-3 font-bold text-black uppercase text-[10px]"><?= htmlspecialchars($row['status']) ?></td>
                                 <?php endif; ?>
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <tr><td colspan="6" class="border border-gray-200 px-5 py-8 text-center text-gray-500 italic text-sm bg-gray-50">No records found matching this exact filter.</td></tr>
+                        <tr><td colspan="6" class="border border-gray-400 px-5 py-8 text-center text-black italic text-sm bg-gray-50">No records found matching this exact filter.</td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>
         </div>
 
-        <div class="mt-12 text-center text-xs font-bold text-gray-400 pb-4">
+        <div class="mt-12 text-center text-xs font-bold text-gray-500 pb-4">
             <p class="tracking-widest uppercase mb-1">--- End of Official Report ---</p>
             <p>Generated By: Barangay Kanluran, Assistance Request System</p>
         </div>
@@ -285,25 +277,32 @@ else {
 
                 const element = document.getElementById('pdf-content');
                 
-                // FIX: Force Landscape orientation, avoid breaking rows, lock windowWidth
+                // FIX: Force element to a pixel width to prevent wide-screen cutoff
+                const originalMaxWidth = element.style.maxWidth;
+                element.style.maxWidth = '1050px';
+                element.style.width = '1050px';
+                
                 const opt = {
-                    margin:       0.5, 
+                    margin:       0.3, 
                     filename:     'KARES_Report_<?= date('Y-m-d_H-i') ?>.pdf',
                     image:        { type: 'jpeg', quality: 1 },
                     html2canvas:  { 
                         scale: 2, 
-                        useCORS: true,
-                        windowWidth: 1200 // Locks width so wide monitors don't distort it
+                        useCORS: true
                     },
                     jsPDF:        { 
                         unit: 'in', 
                         format: 'a4', 
-                        orientation: 'landscape' // Critical for wide tables
+                        orientation: 'landscape' 
                     },
-                    pagebreak:    { mode: 'avoid-all' } // Prevents cutting rows in half causing vertical stretch
+                    pagebreak:    { mode: 'avoid-all' }
                 };
                 
                 html2pdf().set(opt).from(element).save().then(() => {
+                    // Restore styles
+                    element.style.maxWidth = originalMaxWidth;
+                    element.style.width = '';
+                    
                     setTimeout(() => { window.close(); }, 1500);
                 });
                 
