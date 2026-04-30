@@ -216,7 +216,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 region, city, barangay, street, house_no, 
                 em_first_name, em_last_name, em_middle_name, em_name_extension, 
                 em_contact, em_relationship, id_type, id_number, 
-                id_front_url, id_back_url, status
+                id_front_path, id_back_path, status
             ) VALUES (
                 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending'
             )");
@@ -228,7 +228,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_POST['region'] ?? 'NCR', $_POST['city'] ?? 'Pateros', $_POST['brgy'] ?? 'Sto. Rosario-Kanluran', $_POST['street'] ?? '', $_POST['house_no'] ?? '',
                 $_POST['em_fname'] ?? '', $_POST['em_lname'] ?? '', $_POST['em_mname'] ?? '', $_POST['em_ext'] ?? '',
                 $_POST['em_contact'] ?? '', $_POST['em_rel'] ?? '', $_POST['id_type'] ?? '', $_POST['id_number'] ?? '',
-                $id_front_path, $id_back_path // These now correctly use your file paths
+                $id_front_path, $id_back_path // FIX: Corrected column names to match your database structure
             ]);
         }
         // ---------------------------------------------------------
