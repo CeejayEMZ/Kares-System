@@ -131,20 +131,25 @@ else {
             .pb-6 { padding-bottom: 10px !important; }
         }
 
-        /* NEW: EXTREME COMPRESSION FOR PDF EXPORT */
-        /* This forces the layout to shrink massively right before html2pdf takes the screenshot */
+        /* EXTREME COMPRESSION FOR PDF EXPORT */
         .pdf-export-mode {
             padding: 20px !important;
-            max-width: 800px !important; /* Force a narrower width */
+            max-width: 800px !important; 
             margin: 0 auto !important;
         }
+        
+        /* FIX: Force a page break before the table container to prevent stranded headers */
+        .pdf-export-mode .table-container {
+            page-break-before: always !important;
+        }
+
         .pdf-export-mode table {
             width: 100% !important;
-            table-layout: fixed !important; /* Force columns to respect boundaries */
+            table-layout: fixed !important; 
         }
         .pdf-export-mode th, .pdf-export-mode td {
-            font-size: 9px !important; /* Tiny font */
-            padding: 4px 6px !important; /* Tiny padding */
+            font-size: 9px !important; 
+            padding: 4px 6px !important; 
             word-wrap: break-word !important;
             overflow-wrap: break-word !important;
         }
@@ -186,7 +191,8 @@ else {
             <p class="font-bold text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-300 text-sm">Total Rows: <span class="text-black text-base"><?= $total_count ?></span></p>
         </div>
 
-        <div class="overflow-x-auto w-full">
+        <!-- FIX: Added a wrapping div with the class 'table-container' -->
+        <div class="overflow-x-auto w-full table-container">
             <table class="w-full text-left border-collapse text-xs md:text-sm">
                 <thead>
                     <tr class="bg-[#3d143e] text-white">
@@ -298,17 +304,15 @@ else {
 
                 const element = document.getElementById('pdf-content');
                 
-                // Add the class that shrinks everything drastically
                 element.classList.add('pdf-export-mode');
                 
                 const opt = {
-                    margin:       0.4, // Slight margin to give it breathing room
+                    margin:       0.4, 
                     filename:     'KARES_Report_<?= date('Y-m-d_H-i') ?>.pdf',
                     image:        { type: 'jpeg', quality: 1 },
                     html2canvas:  { 
                         scale: 2, 
                         useCORS: true,
-                        // DO NOT set a hard windowWidth here, let it follow the CSS max-width
                     },
                     jsPDF:        { 
                         unit: 'in', 
@@ -319,7 +323,6 @@ else {
                 };
                 
                 html2pdf().set(opt).from(element).save().then(() => {
-                    // Remove the shrinking class so the screen view returns to normal
                     element.classList.remove('pdf-export-mode');
                     
                     setTimeout(() => { window.close(); }, 1500);
