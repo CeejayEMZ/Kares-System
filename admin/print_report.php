@@ -90,7 +90,11 @@ else {
     <style>
         * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        tr { page-break-inside: avoid; }
+        /* Apply page break rules to the table elements */
+        table { page-break-inside: auto; }
+        tr { page-break-inside: avoid; page-break-after: auto; }
+        thead { display: table-header-group; }
+        tfoot { display: table-footer-group; }
 
         /* NATIVE BROWSER PRINT STYLES */
         @media print {
@@ -136,11 +140,6 @@ else {
             padding: 20px !important;
             max-width: 800px !important; 
             margin: 0 auto !important;
-        }
-        
-        /* FIX: Force a page break before the table container to prevent stranded headers */
-        .pdf-export-mode .table-container {
-            page-break-before: always !important;
         }
 
         .pdf-export-mode table {
@@ -191,7 +190,6 @@ else {
             <p class="font-bold text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-300 text-sm">Total Rows: <span class="text-black text-base"><?= $total_count ?></span></p>
         </div>
 
-        <!-- FIX: Added a wrapping div with the class 'table-container' -->
         <div class="overflow-x-auto w-full table-container">
             <table class="w-full text-left border-collapse text-xs md:text-sm">
                 <thead>
@@ -307,7 +305,7 @@ else {
                 element.classList.add('pdf-export-mode');
                 
                 const opt = {
-                    margin:       0.4, 
+                    margin:       [0.4, 0.4, 0.4, 0.4], 
                     filename:     'KARES_Report_<?= date('Y-m-d_H-i') ?>.pdf',
                     image:        { type: 'jpeg', quality: 1 },
                     html2canvas:  { 
@@ -319,7 +317,7 @@ else {
                         format: 'a4', 
                         orientation: 'portrait' 
                     },
-                    pagebreak:    { mode: 'avoid-all' }
+                    pagebreak:    { mode: 'css', before: '#table-container' } // Instruct html2pdf to use CSS pagebreak rules
                 };
                 
                 html2pdf().set(opt).from(element).save().then(() => {
