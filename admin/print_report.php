@@ -93,7 +93,8 @@ else {
         tr { page-break-inside: avoid; }
 
         @media print {
-            @page { margin: 0; size: landscape; } 
+            /* Changed to Portrait */
+            @page { margin: 0; size: portrait; } 
             body { 
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact; 
@@ -274,11 +275,10 @@ else {
 
                 const element = document.getElementById('pdf-content');
                 
-                // Set to 1500px so html2canvas renders it wide, making text look naturally smaller 
-                // when scaled down to fit standard A4 landscape proportions.
+                // Adjusted to 1000px to perfectly scale into a standard Portrait A4 page
                 const originalMaxWidth = element.style.maxWidth;
-                element.style.maxWidth = '1500px'; 
-                element.style.width = '1500px';
+                element.style.maxWidth = '1000px'; 
+                element.style.width = '1000px';
                 
                 const opt = {
                     margin:       0.3, 
@@ -287,12 +287,12 @@ else {
                     html2canvas:  { 
                         scale: 2, 
                         useCORS: true,
-                        windowWidth: 1500 
+                        windowWidth: 1000 
                     },
                     jsPDF:        { 
                         unit: 'in', 
                         format: 'a4', 
-                        orientation: 'landscape' 
+                        orientation: 'portrait' // Changed to Portrait 
                     },
                     pagebreak:    { mode: 'avoid-all' }
                 };
