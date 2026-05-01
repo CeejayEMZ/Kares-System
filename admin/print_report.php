@@ -131,21 +131,28 @@ else {
             .pb-6 { padding-bottom: 10px !important; }
         }
 
-        /* NEW: HTML2PDF DOWNLOAD SCALING STYLES */
-        /* This class mimics the browser's "Shrink-to-Fit" logic by giving the canvas ample room and shrinking text before the snapshot */
-        .pdf-download-active {
-            width: 1000px !important;
-            max-width: 1000px !important;
-            padding: 40px !important;
+        /* NEW: EXTREME COMPRESSION FOR PDF EXPORT */
+        /* This forces the layout to shrink massively right before html2pdf takes the screenshot */
+        .pdf-export-mode {
+            padding: 20px !important;
+            max-width: 800px !important; /* Force a narrower width */
             margin: 0 auto !important;
         }
-        .pdf-download-active table th, .pdf-download-active table td {
-            font-size: 10px !important; /* Force smaller fonts to prevent squishing */
-            padding: 6px 8px !important;
+        .pdf-export-mode table {
+            width: 100% !important;
+            table-layout: fixed !important; /* Force columns to respect boundaries */
         }
-        .pdf-download-active h1 { font-size: 24px !important; margin-bottom: 4px !important; }
-        .pdf-download-active h2 { font-size: 16px !important; }
-        .pdf-download-active .header-info p { font-size: 11px !important; margin: 2px 0 !important; }
+        .pdf-export-mode th, .pdf-export-mode td {
+            font-size: 9px !important; /* Tiny font */
+            padding: 4px 6px !important; /* Tiny padding */
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+        }
+        .pdf-export-mode h1 { font-size: 20px !important; margin-bottom: 2px !important; }
+        .pdf-export-mode h2 { font-size: 14px !important; }
+        .pdf-export-mode .header-info p { font-size: 10px !important; margin: 1px 0 !important; }
+        .pdf-export-mode .mb-10 { margin-bottom: 10px !important; }
+        .pdf-export-mode .pb-6 { padding-bottom: 5px !important; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-900 p-4 md:p-8">
@@ -291,29 +298,29 @@ else {
 
                 const element = document.getElementById('pdf-content');
                 
-                // Temporarily add our scaling class to mimic print behavior
-                element.classList.add('pdf-download-active');
+                // Add the class that shrinks everything drastically
+                element.classList.add('pdf-export-mode');
                 
                 const opt = {
-                    margin:       0.3, 
+                    margin:       0.4, // Slight margin to give it breathing room
                     filename:     'KARES_Report_<?= date('Y-m-d_H-i') ?>.pdf',
                     image:        { type: 'jpeg', quality: 1 },
                     html2canvas:  { 
                         scale: 2, 
                         useCORS: true,
-                        windowWidth: 1000 // Instruct canvas to capture at 1000px width
+                        // DO NOT set a hard windowWidth here, let it follow the CSS max-width
                     },
                     jsPDF:        { 
                         unit: 'in', 
                         format: 'a4', 
-                        orientation: 'portrait' // Set to Portrait 
+                        orientation: 'portrait' 
                     },
                     pagebreak:    { mode: 'avoid-all' }
                 };
                 
                 html2pdf().set(opt).from(element).save().then(() => {
-                    // Remove the class so the browser view returns to normal
-                    element.classList.remove('pdf-download-active');
+                    // Remove the shrinking class so the screen view returns to normal
+                    element.classList.remove('pdf-export-mode');
                     
                     setTimeout(() => { window.close(); }, 1500);
                 });
