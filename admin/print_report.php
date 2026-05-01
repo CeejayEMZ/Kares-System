@@ -92,8 +92,8 @@ else {
         
         tr { page-break-inside: avoid; }
 
+        /* NATIVE BROWSER PRINT STYLES */
         @media print {
-            /* Changed to Portrait */
             @page { margin: 0; size: portrait; } 
             body { 
                 -webkit-print-color-adjust: exact; 
@@ -130,6 +130,22 @@ else {
             .mb-10 { margin-bottom: 15px !important; }
             .pb-6 { padding-bottom: 10px !important; }
         }
+
+        /* NEW: HTML2PDF DOWNLOAD SCALING STYLES */
+        /* This class mimics the browser's "Shrink-to-Fit" logic by giving the canvas ample room and shrinking text before the snapshot */
+        .pdf-download-active {
+            width: 1000px !important;
+            max-width: 1000px !important;
+            padding: 40px !important;
+            margin: 0 auto !important;
+        }
+        .pdf-download-active table th, .pdf-download-active table td {
+            font-size: 10px !important; /* Force smaller fonts to prevent squishing */
+            padding: 6px 8px !important;
+        }
+        .pdf-download-active h1 { font-size: 24px !important; margin-bottom: 4px !important; }
+        .pdf-download-active h2 { font-size: 16px !important; }
+        .pdf-download-active .header-info p { font-size: 11px !important; margin: 2px 0 !important; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-900 p-4 md:p-8">
@@ -275,10 +291,8 @@ else {
 
                 const element = document.getElementById('pdf-content');
                 
-                // Adjusted to 1000px to perfectly scale into a standard Portrait A4 page
-                const originalMaxWidth = element.style.maxWidth;
-                element.style.maxWidth = '1000px'; 
-                element.style.width = '1000px';
+                // Temporarily add our scaling class to mimic print behavior
+                element.classList.add('pdf-download-active');
                 
                 const opt = {
                     margin:       0.3, 
@@ -287,19 +301,19 @@ else {
                     html2canvas:  { 
                         scale: 2, 
                         useCORS: true,
-                        windowWidth: 1000 
+                        windowWidth: 1000 // Instruct canvas to capture at 1000px width
                     },
                     jsPDF:        { 
                         unit: 'in', 
                         format: 'a4', 
-                        orientation: 'portrait' // Changed to Portrait 
+                        orientation: 'portrait' // Set to Portrait 
                     },
                     pagebreak:    { mode: 'avoid-all' }
                 };
                 
                 html2pdf().set(opt).from(element).save().then(() => {
-                    element.style.maxWidth = originalMaxWidth;
-                    element.style.width = '';
+                    // Remove the class so the browser view returns to normal
+                    element.classList.remove('pdf-download-active');
                     
                     setTimeout(() => { window.close(); }, 1500);
                 });
