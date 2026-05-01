@@ -15,16 +15,23 @@ $bucket_name  = 'kares-uploads';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user_id = $_SESSION['user_id'];
     
-    function uploadToSupabase($file_field, $supabase_url, $supabase_key, $bucket_name) {
+    // Updated uploadToSupabase to accept $folder
+    function uploadToSupabase($file_field, $supabase_url, $supabase_key, $bucket_name, $folder = '') {
         if (isset($_FILES[$file_field]) && $_FILES[$file_field]['error'] === UPLOAD_ERR_OK) {
             $file_tmp_path = $_FILES[$file_field]['tmp_name'];
             $file_type = $_FILES[$file_field]['type'];
             $original_name = basename($_FILES[$file_field]['name']);
             $clean_name = preg_replace("/[^a-zA-Z0-9.]/", "_", $original_name);
             $unique_filename = time() . '_verif_' . $file_field . '_' . $clean_name;
+            
+            // Append folder if provided
+            $file_path = !empty($folder) ? rtrim($folder, '/') . '/' . $unique_filename : $unique_filename;
+            
             $file_contents = file_get_contents($file_tmp_path);
             
-            $endpoint = $supabase_url . '/storage/v1/object/' . $bucket_name . '/' . $unique_filename;
+            // Update endpoint to use $file_path
+            $endpoint = $supabase_url . '/storage/v1/object/' . $bucket_name . '/' . $file_path;
+            
             $ch = curl_init($endpoint);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
@@ -39,7 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             curl_close($ch);
             
             if ($http_code === 200) {
-                return $supabase_url . '/storage/v1/object/public/' . $bucket_name . '/' . $unique_filename;
+                // Return the public URL with the new path
+                return $supabase_url . '/storage/v1/object/public/' . $bucket_name . '/' . $file_path;
             } else {
                 die("Upload Failed on field: $file_field. Code: $http_code. $response");
             }
@@ -47,8 +55,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         return null;
     }
 
-    $id_front_path = uploadToSupabase('v_id_front', $supabase_url, $supabase_key, $bucket_name);
-    $id_back_path = uploadToSupabase('v_id_back', $supabase_url, $supabase_key, $bucket_name);
+    // Pass 'identifications' as the folder for ID uploads
+    $id_front_path = uploadToSupabase('v_id_front', $supabase_url, $supabase_key, $bucket_name, 'identifications');
+    $id_back_path = uploadToSupabase('v_id_back', $supabase_url, $supabase_key, $bucket_name, 'identifications');
 
     try {
         $sql = "INSERT INTO user_verifications (
