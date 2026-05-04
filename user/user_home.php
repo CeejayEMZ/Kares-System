@@ -749,7 +749,7 @@ $request_history = $history_stmt->fetchAll();
           </div>
       </div>
 
-      <div class="w-full max-w-5xl mx-auto mb-10">
+      <div class="w-full max-w-5xl mx-auto mb-6">
           <div class="bg-white rounded-3xl p-6 shadow-xl border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6">
               <div class="flex items-center gap-4 w-full md:w-auto border-b md:border-b-0 md:border-r border-gray-100 pb-4 md:pb-0 md:pr-6">
                   <div class="w-14 h-14 bg-yellow-50 rounded-full flex items-center justify-center text-gold shrink-0"><i class="fas fa-clock text-2xl"></i></div>
@@ -798,7 +798,7 @@ $request_history = $history_stmt->fetchAll();
                   </div>
               </div>
 
-              <div class="mb-8">
+              <div>
                   <h3 class="text-lg font-bold text-[#5b8fb0] mb-3">IV. Service Pledge</h3>
                   <p class="text-dark-violet font-bold mb-4">We commit to:</p>
                   <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100 space-y-4">
@@ -825,13 +825,6 @@ $request_history = $history_stmt->fetchAll();
                   </div>
               </div>
 
-              <div>
-                  <h3 class="text-lg font-bold text-[#5b8fb0] mb-3">V. Legal Basis</h3>
-                  <div class="bg-panel-blue rounded-[20px] p-5 border border-white/50 shadow-sm space-y-3 text-gray-700 text-sm md:text-base leading-relaxed">
-                      <p><strong>a.</strong> As provided in Article IV, Section 152(b) of RA 7160 or the Local Government Code of 1991, the Barangay may levy taxes, fees, and charges which shall exclusively accrue to them.</p>
-                      <p><strong>b.</strong> Barangay Ordinance No. 015-19 was enacted on November 16, 2019 to impose fees and charges for the services rendered.</p>
-                  </div>
-              </div>
           </div>
       </div>
       <!-- END OFFICIAL MANDATE SECTION -->
