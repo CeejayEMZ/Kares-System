@@ -749,7 +749,7 @@ $request_history = $history_stmt->fetchAll();
           </div>
       </div>
 
-      <div class="w-full max-w-5xl mx-auto mb-6">
+      <div class="w-full max-w-5xl mx-auto mb-10">
           <div class="bg-white rounded-3xl p-6 shadow-xl border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6">
               <div class="flex items-center gap-4 w-full md:w-auto border-b md:border-b-0 md:border-r border-gray-100 pb-4 md:pb-0 md:pr-6">
                   <div class="w-14 h-14 bg-yellow-50 rounded-full flex items-center justify-center text-gold shrink-0"><i class="fas fa-clock text-2xl"></i></div>
@@ -829,333 +829,6 @@ $request_history = $history_stmt->fetchAll();
       </div>
       <!-- END OFFICIAL MANDATE SECTION -->
 
-    </div>
-
-    <div id="page-verify" class="page hidden animate-fade py-8 md:py-12 px-4 flex flex-col items-center">
-       <div class="bg-dark-violet text-white px-8 md:px-10 py-3 rounded-2xl text-xl md:text-2xl font-bold shadow-lg mb-8 text-center mx-auto z-10 relative inline-block">Account Verification</div>
-       
-       <div class="bg-panel-blue rounded-[40px] w-full max-w-4xl mx-auto shadow-xl border border-white/50 p-6 md:p-12 -mt-14 pt-20 relative">
-           
-           <div class="progress-tracker-wrapper mb-8">
-               <div class="progress-tracker">
-                   <div class="step-item active" id="v-step-marker-1"><div class="step-circle"><i class="fas fa-check"></i></div><span class="step-label">Contact</span></div>
-                   <div class="step-item" id="v-step-marker-2"><div class="step-circle"><i class="fas fa-check"></i></div><span class="step-label">Personal</span></div>
-                   <div class="step-item" id="v-step-marker-3"><div class="step-circle"><i class="fas fa-check"></i></div><span class="step-label">Address</span></div>
-                   <div class="step-item" id="v-step-marker-4"><div class="step-circle"><i class="fas fa-check"></i></div><span class="step-label">Emergency</span></div>
-                   <div class="step-item" id="v-step-marker-5"><div class="step-circle"><i class="fas fa-check"></i></div><span class="step-label">Identification</span></div>
-               </div>
-           </div>
-
-           <form action="../processors/submit_verification.php" method="POST" enctype="multipart/form-data" id="karesVerifForm" onsubmit="event.preventDefault(); openFinalConfirmModal('verify');">
-            <button type="submit" id="hidden-verif-submit" class="hidden"></button>    
-                <div class="form-section-v active" id="v-step-1">
-                    <div class="space-y-4 md:space-y-6 px-0 sm:px-2 md:px-10">
-                        <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Primary Mobile Number</label><input type="tel" name="mobile" required class="reg-input" placeholder="Enter number"></div>
-                        <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Gcash Number</label><input type="tel" name="gcash" class="reg-input" placeholder="Enter GCash number"></div>
-                        <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Email Address</label><input type="email" name="email" required class="reg-input" placeholder="Enter email" value="<?= htmlspecialchars($citizen_email) ?>"></div>
-                    </div>
-                    <div class="flex flex-col sm:flex-row justify-between mt-8 md:mt-12 px-0 sm:px-2 md:px-10 gap-3 md:gap-4">
-                        <button type="button" onclick="showPage('home')" class="border-2 border-header-blue text-header-blue px-6 py-3 md:py-4 rounded-full font-bold hover:bg-white transition w-full sm:w-1/2 text-sm md:text-lg">Cancel</button>
-                        <button type="button" onclick="nextVerifStep(1)" class="bg-gold text-white px-6 py-3 md:py-4 rounded-full font-bold shadow-md hover:bg-yellow-600 transition w-full sm:w-1/2 text-sm md:text-lg">Next</button>
-                    </div>
-                </div>
-
-                <div class="form-section-v" id="v-step-2">
-                    <div class="space-y-4 md:space-y-6 px-0 sm:px-2 md:px-10">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                            <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">First Name</label><input type="text" name="fname" required class="reg-input" placeholder="First Name"></div>
-                            <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Last Name</label><input type="text" name="lname" required class="reg-input" placeholder="Last Name"></div>
-                            <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Middle Name</label><input type="text" name="mname" class="reg-input" placeholder="Middle Name"></div>
-                            <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Name Extension</label><input type="text" name="ext" class="reg-input" placeholder="Jr., Sr."></div>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mt-2">
-                            <div class="relative"><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Civil Status</label>
-                                <select name="civil_status" required class="reg-input appearance-none"><option value="">Select...</option><option value="Single">Single</option><option value="Married">Married</option><option value="Widowed">Widowed</option></select>
-                            </div>
-                            <div class="relative"><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Family Income</label>
-                                <select name="income" required class="reg-input appearance-none"><option value="">Select...</option><option value="Lower than 10,000">Lower than 10,000</option><option value="10,000 - 30,000">10,000 - 30,000</option><option value="Above 30,000">Above 30,000</option></select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex flex-col sm:flex-row justify-between mt-8 md:mt-12 px-0 sm:px-2 md:px-10 gap-3 md:gap-4">
-                        <button type="button" onclick="prevVerifStep(2)" class="border-2 border-header-blue text-header-blue px-6 py-3 md:py-4 rounded-full font-bold hover:bg-white transition w-full sm:w-1/2 text-sm md:text-lg">Back</button>
-                        <button type="button" onclick="nextVerifStep(2)" class="bg-gold text-white px-6 py-3 md:py-4 rounded-full font-bold shadow-md hover:bg-yellow-600 transition w-full sm:w-1/2 text-sm md:text-lg">Next</button>
-                    </div>
-                </div>
-
-                <div class="form-section-v" id="v-step-3">
-                    <div class="space-y-4 md:space-y-6 px-0 sm:px-2 md:px-10">
-                        <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Region</label><input type="text" name="region" value="NCR" readonly class="reg-input bg-gray-200 text-gray-600"></div>
-                        <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">City</label><input type="text" name="city" value="Pateros" readonly class="reg-input bg-gray-200 text-gray-600"></div>
-                        <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Barangay</label><input type="text" name="brgy" value="Sto. Rosario-Kanluran" readonly class="reg-input bg-gray-200 text-gray-600"></div>
-                        <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Street</label><input type="text" name="street" required class="reg-input" placeholder="Enter Street Name"></div>
-                        <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">House/Lot/Blk No.</label><input type="text" name="house_no" required class="reg-input" placeholder="Enter House/Lot/Blk"></div>
-                    </div>
-                    <div class="flex flex-col sm:flex-row justify-between mt-8 md:mt-12 px-0 sm:px-2 md:px-10 gap-3 md:gap-4">
-                        <button type="button" onclick="prevVerifStep(3)" class="border-2 border-header-blue text-header-blue px-6 py-3 md:py-4 rounded-full font-bold hover:bg-white transition w-full sm:w-1/2 text-sm md:text-lg">Back</button>
-                        <button type="button" onclick="nextVerifStep(3)" class="bg-gold text-white px-6 py-3 md:py-4 rounded-full font-bold shadow-md hover:bg-yellow-600 transition w-full sm:w-1/2 text-sm md:text-lg">Next</button>
-                    </div>
-                </div>
-
-                <div class="form-section-v" id="v-step-4">
-                    <div class="space-y-4 md:space-y-6 px-0 sm:px-2 md:px-10">
-                        <div class="text-center mb-4 sm:mb-6">
-                            <h3 class="text-xl md:text-2xl font-black text-dark-violet tracking-wide"><i class="fas fa-address-book text-gold mr-2"></i>Emergency Contact</h3>
-                            <p class="text-xs md:text-sm text-[#5b8fb0] font-medium mt-1">Please provide the details of someone we can reach on your behalf.</p>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                            <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">First Name</label><input type="text" name="em_fname" required class="reg-input" placeholder="First Name"></div>
-                            <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Last Name</label><input type="text" name="em_lname" required class="reg-input" placeholder="Last Name"></div>
-                            <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Middle Name</label><input type="text" name="em_mname" autocomplete="additional-name" class="reg-input" placeholder="Middle Name"></div>
-                            <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Name Extension</label><input type="text" name="em_ext" autocomplete="honorific-suffix" class="reg-input" placeholder="Jr., Sr."></div>
-                        </div>
-                        <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Contact Number</label><input type="tel" name="em_contact" required class="reg-input" placeholder="09XX XXX XXXX"></div>
-                        <div class="relative"><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Relationship</label>
-                            <select name="em_rel" required class="reg-input appearance-none">
-                                <option value="">Select...</option><option value="Parent">Parent</option><option value="Sibling">Sibling</option><option value="Spouse">Spouse</option><option value="Auntie">Auntie</option><option value="Uncle">Uncle</option><option value="Guardian">Guardian</option><option value="Grandparents">Grandparents</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="flex flex-col sm:flex-row justify-between mt-8 md:mt-12 px-0 sm:px-2 md:px-10 gap-3 md:gap-4">
-                        <button type="button" onclick="prevVerifStep(4)" class="border-2 border-header-blue text-header-blue px-6 py-3 md:py-4 rounded-full font-bold hover:bg-white transition w-full sm:w-1/2 text-sm md:text-lg">Back</button>
-                        <button type="button" onclick="nextVerifStep(4)" class="bg-gold text-white px-6 py-3 md:py-4 rounded-full font-bold shadow-md hover:bg-yellow-600 transition w-full sm:w-1/2 text-sm md:text-lg">Next</button>
-                    </div>
-                </div>
-
-                <div class="form-section-v" id="v-step-5">
-                    <div class="space-y-4 md:space-y-6 px-0 sm:px-2 md:px-10">
-                        <div class="relative"><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Presented ID Type</label>
-                            <select name="id_type" required class="reg-input appearance-none"><option value="">Select...</option><option value="National ID">National ID</option><option value="Voter's ID">Voter's ID</option><option value="Driver's License">Driver's License</option><option value="Passport">Passport</option></select>
-                        </div>
-                        <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">ID Number</label><input type="text" name="id_number" required class="reg-input" placeholder="Enter ID Number"></div>
-                        
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mt-2">
-                            <div class="file-upload-box relative">
-                                <img id="v_preview_id_front" class="upload-preview-img hidden">
-                                <div class="upload-content"><i class="fas fa-camera text-3xl mb-2"></i><br>Upload ID Picture (Front)</div>
-                                <input type="file" name="v_id_front" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*" required onchange="previewImage(this, 'v_preview_id_front')">
-                            </div>
-                            <div class="file-upload-box relative">
-                                <img id="v_preview_id_back" class="upload-preview-img hidden">
-                                <div class="upload-content"><i class="fas fa-camera text-3xl mb-2"></i><br>Upload ID Picture (Back)</div>
-                                <input type="file" name="v_id_back" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*" required onchange="previewImage(this, 'v_preview_id_back')">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex flex-col sm:flex-row justify-between mt-10 sm:mt-12 px-0 sm:px-2 md:px-10 gap-3 sm:gap-4">
-                        <button type="button" onclick="prevVerifStep(5)" class="border-2 border-header-blue text-header-blue px-6 py-3 sm:py-4 rounded-full font-bold hover:bg-white transition w-full sm:w-1/2 text-base sm:text-lg">Back</button>
-                        <button type="button" onclick="openFinalConfirmModal('verify')" class="bg-gold text-white px-6 py-3 sm:py-4 rounded-full font-bold shadow-md hover:bg-yellow-600 transition w-full sm:w-1/2 text-base sm:text-lg">Review Verification</button>
-                    </div>
-                </div>
-
-            </form>
-       </div>
-    </div>
-
-    <div id="page-aid" class="page hidden animate-fade py-8 md:py-12 px-4 flex flex-col items-center">
-       <div class="bg-dark-violet text-white px-8 md:px-10 py-3 rounded-2xl text-xl md:text-2xl font-bold shadow-lg mb-8 text-center mx-auto inline-block">Social Welfare Assistance</div>
-       <div class="bg-panel-blue rounded-[40px] w-full max-w-3xl mx-auto overflow-hidden shadow-xl border border-white/50">
-           <div class="bg-header-blue p-5 text-center text-white font-medium text-base md:text-lg tracking-wide">Select the assistance type you need:</div>
-           <div class="p-6 md:p-12 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-8">
-               <button onclick="openSubModal('Medical Assistance', ['Medical Support', 'Mercury Drugs (Medicine)'])" class="bg-card-beige rounded-[30px] p-6 md:p-8 flex flex-col items-center justify-center text-center shadow-md hover:scale-105 transition w-full">
-                   <i class="fas fa-band-aid text-4xl md:text-5xl text-gray-800 mb-3 md:mb-4"></i><h3 class="text-dark-violet font-bold text-lg md:text-xl mb-1 md:mb-2">Medical Assistance</h3><p class="text-gray-800 font-medium text-xs md:text-base">Support & Medicine</p>
-               </button>
-               <button onclick="openSubModal('Hospital Bill', ['Hospital Cost Support', 'Hospital Cost for PCSO'])" class="bg-card-beige rounded-[30px] p-6 md:p-8 flex flex-col items-center justify-center text-center shadow-md hover:scale-105 transition w-full">
-                   <i class="far fa-hospital text-4xl md:text-5xl text-gray-800 mb-3 md:mb-4"></i><h3 class="text-dark-violet font-bold text-lg md:text-xl mb-1 md:mb-2">Hospital Bill</h3><p class="text-gray-800 font-medium text-xs md:text-base">Hospital Cost & PCSO</p>
-               </button>
-               <button onclick="openSubModal('Financial Assistance', ['Financial Support'])" class="bg-card-beige rounded-[30px] p-6 md:p-8 flex flex-col items-center justify-center text-center shadow-md hover:scale-105 transition w-full">
-                   <i class="fas fa-hand-holding-usd text-4xl md:text-5xl text-gray-800 mb-3 md:mb-4"></i><h3 class="text-dark-violet font-bold text-lg md:text-xl mb-1 md:mb-2">Financial Assistance</h3><p class="text-gray-800 font-medium text-xs md:text-base">Financial Support</p>
-               </button>
-               <button onclick="openSubModal('Burial Assistance', ['Funeral Support'])" class="bg-card-beige rounded-[30px] p-6 md:p-8 flex flex-col items-center justify-center text-center shadow-md hover:scale-105 transition w-full">
-                   <i class="fas fa-dove text-4xl md:text-5xl text-gray-800 mb-3 md:mb-4"></i><h3 class="text-dark-violet font-bold text-lg md:text-xl mb-1 md:mb-2">Burial Assistance</h3><p class="text-gray-800 font-medium text-xs md:text-base">Funeral Support</p>
-               </button>
-           </div>
-       </div>
-    </div>
-
-    <div id="selection-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-panel-blue w-full max-w-md rounded-[30px] overflow-hidden shadow-2xl animate-fade border border-white/20">
-            <div id="modal-header-title" class="bg-header-blue text-dark-violet p-4 text-center font-bold text-lg md:text-xl tracking-wide">Assistance Type</div>
-            <div class="p-6 md:p-8">
-                <div id="sub-options-container" class="space-y-3 mb-8"></div>
-                <div class="flex flex-col sm:flex-row justify-between items-center mt-6 px-0 md:px-2 gap-3 md:gap-4">
-                    <button onclick="closeSubModal()" class="text-header-blue border-2 border-header-blue px-4 md:px-6 py-2 md:py-3 rounded-full font-bold hover:bg-header-blue hover:text-white transition w-full sm:w-1/2 text-sm md:text-lg">Cancel</button>
-                    <button onclick="handleSelectionProceed()" class="bg-gold text-white px-4 md:px-6 py-2 md:py-3 rounded-full font-bold shadow-md hover:bg-yellow-600 transition w-full sm:w-1/2 text-sm md:text-lg">Proceed</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="page-form" class="page hidden animate-fade py-8 md:py-12 px-4 flex flex-col items-center">
-       <div id="form-dynamic-title" class="bg-dark-violet text-white px-8 md:px-10 py-3 rounded-2xl text-xl md:text-2xl font-bold shadow-lg mb-8 text-center mx-auto z-10 relative inline-block">Account Verification</div>
-       
-       <div class="bg-panel-blue rounded-[40px] w-full max-w-4xl mx-auto shadow-xl border border-white/50 p-6 md:p-12 -mt-14 pt-20 relative">
-           
-           <div class="progress-tracker-wrapper mb-8" id="request-progress-container">
-               <div class="progress-tracker">
-                   <div class="step-item active" id="step-marker-1"><div class="step-circle"><i class="fas fa-check"></i></div><span class="step-label">Contact</span></div>
-                   <div class="step-item" id="step-marker-2"><div class="step-circle"><i class="fas fa-check"></i></div><span class="step-label">Personal</span></div>
-                   <div class="step-item" id="step-marker-3"><div class="step-circle"><i class="fas fa-check"></i></div><span class="step-label">Address</span></div>
-                   <div class="step-item" id="step-marker-4"><div class="step-circle"><i class="fas fa-check"></i></div><span class="step-label">Emergency</span></div>
-                   <div class="step-item" id="step-marker-5"><div class="step-circle"><i class="fas fa-check"></i></div><span class="step-label">Identification</span></div>
-                   <div class="step-item" id="step-marker-6"><div class="step-circle"><i class="fas fa-check"></i></div><span class="step-label">Requirements</span></div>
-               </div>
-           </div>
-
-           <div class="text-center mb-8 pb-6 border-b border-[#5b8fb0]/20 hidden" id="global-request-info">
-               <h3 class="text-[#5b8fb0] text-base md:text-lg font-bold">Request ID</h3>
-               <p class="font-black text-xl md:text-3xl text-dark-violet tracking-wide mt-1" id="global-req-id"></p>
-               <p id="global-applicant-name" class="text-sm md:text-lg text-[#5b8fb0] mt-3 font-medium hidden">Applicant: <span class="font-bold text-[#3d143e]" id="applicant-span"></span></p>
-           </div>
-
-           <form action="../processors/submit_request.php" method="POST" enctype="multipart/form-data" id="karesForm" onsubmit="event.preventDefault(); openFinalConfirmModal('request');">
-            <button type="submit" id="hidden-req-submit" class="hidden"></button>
-            <input type="hidden" name="ui_generated_id" id="hidden_req_id">
-            <input type="hidden" id="display_aid_type" name="aid_type">
-
-            <div class="form-section active" id="step-1">
-                <div class="space-y-4 md:space-y-6 px-0 sm:px-2 md:px-10">
-                    <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Primary Mobile Number</label><input type="tel" name="mobile" required class="reg-input" placeholder="Enter number" value="<?= htmlspecialchars($v_mobile ?? '') ?>"></div>
-                    <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Gcash Number</label><input type="tel" name="gcash" class="reg-input" placeholder="Enter GCash number" value="<?= htmlspecialchars($v_gcash ?? '') ?>"></div>
-                    <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Email Address</label><input type="email" name="email" required class="reg-input" placeholder="Enter email" value="<?= htmlspecialchars($v_email ?? $citizen_email) ?>"></div>
-                </div>
-                <div class="flex flex-col sm:flex-row justify-between mt-8 md:mt-12 px-0 sm:px-2 md:px-10 gap-3 md:gap-4">
-                    <button type="button" onclick="showPage('aid')" class="border-2 border-header-blue text-header-blue px-6 py-3 md:py-4 rounded-full font-bold hover:bg-white transition w-full sm:w-1/2 text-sm md:text-lg">Back</button>
-                    <button type="button" onclick="nextStep(1)" class="bg-gold text-white px-6 py-3 md:py-4 rounded-full font-bold shadow-md hover:bg-yellow-600 transition w-full sm:w-1/2 text-sm md:text-lg">Next</button>
-                </div>
-            </div>
-
-            <div class="form-section" id="step-2">
-                <div class="space-y-4 md:space-y-6 px-0 sm:px-2 md:px-10">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                        <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">First Name</label><input type="text" name="fname" autocomplete="given-name" required class="reg-input" placeholder="First Name" value="<?= htmlspecialchars($v_fname) ?>"></div>
-                        <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Last Name</label><input type="text" name="lname" autocomplete="family-name" required class="reg-input" placeholder="Last Name" value="<?= htmlspecialchars($v_lname) ?>"></div>
-                        <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Middle Name</label><input type="text" name="mname" autocomplete="additional-name" class="reg-input" placeholder="Middle Name" value="<?= htmlspecialchars($v_mname ?? '') ?>"></div>
-                        <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Name Extension</label><input type="text" name="ext" autocomplete="honorific-suffix" class="reg-input" placeholder="Jr., Sr." value="<?= htmlspecialchars($v_ext ?? '') ?>"></div>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mt-2">
-                        <div class="relative"><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Civil Status</label>
-                            <select name="civil_status" required class="reg-input appearance-none">
-                                <option value="">Select...</option>
-                                <option value="Single" <?= ($v_civil ?? '') === 'Single' ? 'selected' : '' ?>>Single</option>
-                                <option value="Married" <?= ($v_civil ?? '') === 'Married' ? 'selected' : '' ?>>Married</option>
-                                <option value="Widowed" <?= ($v_civil ?? '') === 'Widowed' ? 'selected' : '' ?>>Widowed</option>
-                            </select>
-                        </div>
-                        <div class="relative"><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Family Income</label>
-                            <select name="income" required class="reg-input appearance-none">
-                                <option value="">Select...</option>
-                                <option value="Lower than 10,000" <?= ($v_income ?? '') === 'Lower than 10,000' ? 'selected' : '' ?>>Lower than 10,000</option>
-                                <option value="10,000 - 30,000" <?= ($v_income ?? '') === '10,000 - 30,000' ? 'selected' : '' ?>>10,000 - 30,000</option>
-                                <option value="Above 30,000" <?= ($v_income ?? '') === 'Above 30,000' ? 'selected' : '' ?>>Above 30,000</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex flex-col sm:flex-row justify-between mt-8 md:mt-12 px-0 sm:px-2 md:px-10 gap-3 md:gap-4">
-                    <button type="button" onclick="prevStep(2)" class="border-2 border-header-blue text-header-blue px-6 py-3 md:py-4 rounded-full font-bold hover:bg-white transition w-full sm:w-1/2 text-sm md:text-lg">Back</button>
-                    <button type="button" onclick="nextStep(2)" class="bg-gold text-white px-6 py-3 md:py-4 rounded-full font-bold shadow-md hover:bg-yellow-600 transition w-full sm:w-1/2 text-sm md:text-lg">Next</button>
-                </div>
-            </div>
-
-            <div class="form-section" id="step-3">
-                <div class="space-y-4 md:space-y-6 px-0 sm:px-2 md:px-10">
-                    <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Region</label><input type="text" name="region" value="<?= htmlspecialchars(!empty($v_region) ? $v_region : 'NCR') ?>" readonly class="reg-input bg-gray-200 text-gray-600"></div>
-                    <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">City</label><input type="text" name="city" value="<?= htmlspecialchars(!empty($v_city) ? $v_city : 'Pateros') ?>" readonly class="reg-input bg-gray-200 text-gray-600"></div>
-                    <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Barangay</label><input type="text" name="brgy" value="<?= htmlspecialchars(!empty($v_brgy) ? $v_brgy : 'Sto. Rosario-Kanluran') ?>" readonly class="reg-input bg-gray-200 text-gray-600"></div>
-                    <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Street</label><input type="text" name="street" required class="reg-input" placeholder="Enter Street Name" value="<?= htmlspecialchars($v_street ?? '') ?>"></div>
-                    <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">House/Lot/Blk No.</label><input type="text" name="house_no" class="reg-input" placeholder="Enter House/Lot/Blk" value="<?= htmlspecialchars($v_house ?? '') ?>"></div>
-                </div>
-                <div class="flex flex-col sm:flex-row justify-between mt-8 md:mt-12 px-0 sm:px-2 md:px-10 gap-3 md:gap-4">
-                    <button type="button" onclick="prevStep(3)" class="border-2 border-header-blue text-header-blue px-6 py-3 md:py-4 rounded-full font-bold hover:bg-white transition w-full sm:w-1/2 text-sm md:text-lg">Back</button>
-                    <button type="button" onclick="nextStep(3)" class="bg-gold text-white px-6 py-3 md:py-4 rounded-full font-bold shadow-md hover:bg-yellow-600 transition w-full sm:w-1/2 text-sm md:text-lg">Next</button>
-                </div>
-            </div>
-
-            <div class="form-section" id="step-4">
-                <div class="space-y-4 md:space-y-6 px-0 sm:px-2 md:px-10">
-                    <div class="text-center mb-4 sm:mb-6">
-                        <h3 class="text-xl md:text-2xl font-black text-dark-violet tracking-wide"><i class="fas fa-address-book text-gold mr-2"></i>Emergency Contact</h3>
-                        <p class="text-xs md:text-sm text-[#5b8fb0] font-medium mt-1">Please provide the details of someone we can reach on your behalf.</p>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                        <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">First Name</label><input type="text" name="em_fname" required class="reg-input" placeholder="First Name" value="<?= htmlspecialchars($v_em_fname ?? '') ?>"></div>
-                        <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Last Name</label><input type="text" name="em_lname" required class="reg-input" placeholder="Last Name" value="<?= htmlspecialchars($v_em_lname ?? '') ?>"></div>
-                        <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Middle Name</label><input type="text" name="em_mname" autocomplete="additional-name" class="reg-input" placeholder="Middle Name" value="<?= htmlspecialchars($v_em_mname ?? '') ?>"></div>
-                        <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Name Extension</label><input type="text" name="em_ext" autocomplete="honorific-suffix" class="reg-input" placeholder="Jr., Sr." value="<?= htmlspecialchars($v_em_ext ?? '') ?>"></div>
-                    </div>
-                    <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Contact Number</label><input type="tel" name="em_contact" required class="reg-input" placeholder="09XX XXX XXXX" value="<?= htmlspecialchars($v_em_contact ?? '') ?>"></div>
-                    <div class="relative"><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Relationship</label>
-                        <select name="em_rel" required class="reg-input appearance-none">
-                            <option value="">Select...</option>
-                            <option value="Parent" <?= ($v_em_rel ?? '') === 'Parent' ? 'selected' : '' ?>>Parent</option>
-                            <option value="Sibling" <?= ($v_em_rel ?? '') === 'Sibling' ? 'selected' : '' ?>>Sibling</option>
-                            <option value="Spouse" <?= ($v_em_rel ?? '') === 'Spouse' ? 'selected' : '' ?>>Spouse</option>
-                            <option value="Auntie" <?= ($v_em_rel ?? '') === 'Auntie' ? 'selected' : '' ?>>Auntie</option>
-                            <option value="Uncle" <?= ($v_em_rel ?? '') === 'Uncle' ? 'selected' : '' ?>>Uncle</option>
-                            <option value="Guardian" <?= ($v_em_rel ?? '') === 'Guardian' ? 'selected' : '' ?>>Guardian</option>
-                            <option value="Grandparents" <?= ($v_em_rel ?? '') === 'Grandparents' ? 'selected' : '' ?>>Grandparents</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="flex flex-col sm:flex-row justify-between mt-8 md:mt-12 px-0 sm:px-2 md:px-10 gap-3 md:gap-4">
-                    <button type="button" onclick="prevStep(4)" class="border-2 border-header-blue text-header-blue px-6 py-3 md:py-4 rounded-full font-bold hover:bg-white transition w-full sm:w-1/2 text-sm md:text-lg">Back</button>
-                    <button type="button" onclick="nextStep(4)" class="bg-gold text-white px-6 py-3 md:py-4 rounded-full font-bold shadow-md hover:bg-yellow-600 transition w-full sm:w-1/2 text-sm md:text-lg">Next</button>
-                </div>
-            </div>
-
-            <div class="form-section" id="step-5">
-                <div class="space-y-4 md:space-y-6 px-0 sm:px-2 md:px-10">
-                    <div class="relative"><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Presented ID Type</label>
-                        <select name="id_type" required class="reg-input appearance-none">
-                            <option value="">Select...</option>
-                            <option value="National ID" <?= $v_id_type === 'National ID' ? 'selected' : '' ?>>National ID</option>
-                            <option value="Voter's ID" <?= $v_id_type === "Voter's ID" ? 'selected' : '' ?>>Voter's ID</option>
-                            <option value="Driver's License" <?= $v_id_type === "Driver's License" ? 'selected' : '' ?>>Driver's License</option>
-                            <option value="Passport" <?= $v_id_type === 'Passport' ? 'selected' : '' ?>>Passport</option>
-                        </select>
-                    </div>
-                    <div><label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">ID Number</label><input type="text" name="id_number" required class="reg-input" placeholder="Enter ID Number" value="<?= htmlspecialchars($v_id_number) ?>"></div>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mt-2">
-                        <div class="file-upload-box relative">
-                            <img id="preview_id_front" class="upload-preview-img hidden">
-                            <div class="upload-content"><i class="fas fa-camera text-3xl mb-2"></i><br>Upload ID Picture (Front)</div>
-                            <input type="file" id="id_front" name="id_front" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*" required onchange="previewImage(this, 'preview_id_front')">
-                        </div>
-                        <div class="file-upload-box relative">
-                            <img id="preview_id_back" class="upload-preview-img hidden">
-                            <div class="upload-content"><i class="fas fa-camera text-3xl mb-2"></i><br>Upload ID Picture (Back)</div>
-                            <input type="file" id="id_back" name="id_back" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*" required onchange="previewImage(this, 'preview_id_back')">
-                        </div>
-                    </div>
-                </div>
-                <div class="flex flex-col sm:flex-row justify-between mt-8 md:mt-12 px-0 sm:px-2 md:px-10 gap-3 md:gap-4">
-                    <button type="button" onclick="prevStep(5)" class="border-2 border-header-blue text-header-blue px-6 py-3 md:py-4 rounded-full font-bold hover:bg-white transition w-full sm:w-1/2 text-sm md:text-lg">Back</button>
-                    <button type="button" onclick="nextStep(5)" class="bg-gold text-white px-6 py-3 md:py-4 rounded-full font-bold shadow-md hover:bg-yellow-600 transition w-full sm:w-1/2 text-sm md:text-lg">Next</button>
-                </div>
-            </div>
-
-            <div class="form-section" id="step-6">
-                <div class="space-y-4 md:space-y-6 px-0 sm:px-2 md:px-10 mt-6">
-                    <div>
-                        <label class="block text-sm md:text-base font-bold text-dark-violet mb-2 ml-2">Description of Need</label>
-                        <textarea name="description" required placeholder="Please describe your need..." class="reg-input desc-input text-gray-800"></textarea>
-                    </div>
-                    
-                    <div id="dynamic-requirements-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mt-4 md:mt-6"></div>
-
-                    <div id="pcso-note" class="hidden mt-4 text-center bg-blue-50 text-blue-800 p-4 rounded-xl border border-blue-200 font-bold text-sm md:text-base">
-                        <i class="fas fa-info-circle mr-2"></i> PCSO: Email <a href="mailto:ncrmap@pcso.gov.ph" class="underline">ncrmap@pcso.gov.ph</a><br>Phone: 09678520823
-                    </div>
-                </div>
-                <div class="flex flex-col sm:flex-row justify-between mt-8 md:mt-12 px-0 sm:px-2 md:px-10 gap-3 md:gap-4">
-                    <button type="button" id="btn-back-step6" onclick="prevStep(6)" class="border-2 border-header-blue text-header-blue px-6 py-3 md:py-4 rounded-full font-bold hover:bg-white transition w-full sm:w-1/2 text-sm md:text-lg">Back</button>
-                    <button type="button" onclick="openFinalConfirmModal('request')" class="bg-dark-violet text-white px-6 py-3 md:py-4 rounded-full font-bold shadow-md hover:bg-purple-900 transition w-full sm:w-1/2 text-sm md:text-lg">Review Request</button>
-                </div>
-            </div>
-            </form>
-       </div>
     </div>
 
     <div id="page-track" class="page hidden animate-fade py-8 md:py-12 px-4 flex flex-col items-center">
@@ -2209,6 +1882,32 @@ $request_history = $history_stmt->fetchAll();
             inputEl.value = '';
 
             const textLower = userText.toLowerCase();
+
+            // ==========================================
+            // 1. PROFANITY FILTER (Tagalog & English)
+            // ==========================================
+            const badWords = ['bobo', 'tanga', 'gago', 'gaga', 'puta', 'tae', 'stupid', 'idiot', 'fuck', 'shit', 'Tangina', 'Tangina mo', 'bitch', 'Nigga', 'Nigger'];
+            
+            const isProfane = badWords.some(word => textLower.includes(word));
+            if (isProfane) {
+                this.botReply("Please keep our conversation respectful. I am here to assist you with official Barangay matters. Do you have a valid question or Reference ID?");
+                return;
+            }
+
+            // ==========================================
+            // 2. GIBBERISH / SPAM FILTER
+            // ==========================================
+            const isSpam = /(.)\1{4,}/.test(textLower); 
+            const isLongGibberish = textLower.length > 15 && !textLower.includes(' ') && !textLower.match(/^\d{4}-/); 
+
+            if (isSpam || isLongGibberish) {
+                this.botReply("That doesn't look like a valid question or Reference ID. Please type clearly so I can assist you properly!");
+                return;
+            }
+
+            // ==========================================
+            // NORMAL CHATBOT LOGIC CONTINUES BELOW...
+            // ==========================================
             let botResponse = "I'm not quite sure about that. Try clicking one of the FAQ buttons, or give me your Reference ID to track a request!";
 
             if (textLower === "hi" || textLower === "hello" || textLower === "hey") {
@@ -2251,6 +1950,13 @@ $request_history = $history_stmt->fetchAll();
             else if (textLower.includes("who are you") || textLower.includes("what are you")) {
                 botResponse = "I am Cares, the official AI assistant for Barangay Santo Rosario-Kanluran. I can guide you through requests and track your documents!";
             }
+            // ==========================================
+            // 3. DEVELOPER EASTER EGG!
+            // ==========================================
+            else if (textLower.includes("developer") || textLower.includes("creator") || textLower.includes("maker") || textLower.includes("who made") || textLower.includes("Developed") || textLower.includes("who created") || textLower.includes("who built")) {
+                botResponse = "I was proudly built by a brilliant team of 3rd-year students from the University of Makati! 🎓 The developers are Carl Justin Mijares, Christine Mae Luis, Sean Dael, and Adrian Valencia.";
+            }
+            // ==========================================
             else if (textLower.match(/^\d{4}-/)) {
                 botResponse = "It looks like you entered a Reference ID! Let me check the database for that...";
                 this.botReply(botResponse);
