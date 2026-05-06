@@ -626,7 +626,7 @@ $request_history = $history_stmt->fetchAll();
               <h1 class="text-2xl md:text-4xl lg:text-5xl font-extrabold mb-3 md:mb-4 text-white tracking-tight">Kalinga Assistance Portal</h1>
               <p class="text-base md:text-xl text-gold mb-6 md:mb-8 font-medium">Barangay Santo Rosario-Kanluran</p>
               <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 md:p-6 max-w-2xl mx-auto mb-8 md:mb-10 text-white/90 leading-relaxed text-sm md:text-lg shadow-inner">
-                  Welcome to the Kalinga Assistance Request and Evaluation System (KARES). This portal is designed to provide our beloved constituents with fast, transparent, and easy access to medical, financial, and social welfare assistance right from the comfort of your home.
+                  Welcome to the Kalinga Assistance Request and Engagement System (KARES). This portal is designed to provide our beloved constituents with fast, transparent, and easy access to medical, financial, and social welfare assistance right from the comfort of your home.
               </div>
               
               <button onclick="attemptAssistanceRequest()" class="bg-gold text-white px-8 md:px-10 py-3 md:py-4 rounded-full font-bold shadow-lg hover:bg-yellow-600 transition-all inline-flex items-center justify-center gap-3 text-base md:text-lg hover:scale-105 transform w-full sm:w-auto"> 
