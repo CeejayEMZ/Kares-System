@@ -639,7 +639,7 @@ $avatar_letter = strtoupper(substr($citizen_name, 0, 1));
 
             <div class="flex justify-center mb-10">
                 <button onclick="document.getElementById('logoutModal').classList.remove('hidden')" class="bg-white border-2 border-[#3d143e] text-[#3d143e] px-10 py-3 rounded-full font-bold shadow-sm hover:bg-gray-50 transition hover:scale-105 transform flex items-center gap-3">
-                    <i class="fas fa-sign-out-alt"></i> Log Out
+                    <i class="fas fa-sign-out-alt"></i> Sign Out
                 </button>
             </div>
 
@@ -648,7 +648,7 @@ $avatar_letter = strtoupper(substr($citizen_name, 0, 1));
 
     <div id="logoutModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[999] flex items-center justify-center p-4 animate-fade">
         <div class="bg-white p-8 rounded-[30px] shadow-2xl max-w-sm w-full text-center border border-gray-200 relative">
-            <h3 class="text-xl font-bold text-[#3d143e] mb-8">Are you sure you want to log out?</h3>
+            <h3 class="text-xl font-bold text-[#3d143e] mb-8">Are you sure you want to sign out?</h3>
             <div class="flex flex-col gap-3">
                 <a href="../processors/logout.php" class="bg-[#3d143e] text-white px-6 py-3 rounded-full font-bold hover:bg-purple-900 transition shadow-md w-full">
                     Yes, Log Out
