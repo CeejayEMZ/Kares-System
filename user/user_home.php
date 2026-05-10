@@ -364,7 +364,7 @@ $request_history = $history_stmt->fetchAll();
                             <i class="fas fa-id-badge text-lg"></i> My Profile
                         </a>
                         <a href="../processors/logout.php" class="w-full text-left px-5 py-3 text-red-500 hover:bg-red-50 font-bold transition-all flex items-center gap-3">
-                            <i class="fas fa-sign-out-alt text-lg"></i> Logout
+                            <i class="fas fa-sign-out-alt text-lg"></i> Sign Out
                         </a>
                     </div>
                 </div>
