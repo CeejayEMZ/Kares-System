@@ -1095,7 +1095,7 @@ $request_history = $history_stmt->fetchAll();
                             <option value="Auntie" <?= ($v_em_rel ?? '') === 'Auntie' ? 'selected' : '' ?>>Auntie</option>
                             <option value="Uncle" <?= ($v_em_rel ?? '') === 'Uncle' ? 'selected' : '' ?>>Uncle</option>
                             <option value="Guardian" <?= ($v_em_rel ?? '') === 'Guardian' ? 'selected' : '' ?>>Guardian</option>
-                            <option value="Grandparents" <?= ($v_em_rel ?? '') === 'Grandparents' ? 'selected' : '' ?>>Grandparents</option>
+                            <option value="Grandparents" <?= ($v_em_rel ?? '') === 'Grandparents' ? 'selected' : '' ?>>Grandparent</option>
                         </select>
                     </div>
                 </div>
